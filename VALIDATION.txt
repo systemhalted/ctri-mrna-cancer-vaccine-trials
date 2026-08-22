@@ -1,4 +1,4 @@
-Validation performed on 2026-08-22
+Validation performed on 2026-08-22; corrected 2026-08-22.
 
 1. Python syntax check:
    python -m py_compile ctri_mrna_trials.py
@@ -6,13 +6,25 @@ Validation performed on 2026-08-22
 
 2. Unit tests:
    python -m unittest discover -s tests -v
-   Result: 8 tests PASS
+   Result: 7 tests PASS
 
 3. Offline pipeline fixture:
-   python ctri_mrna_trials.py --fixture data/fixtures/clinicaltrials_fixture.json --output-dir /tmp/ctri-fixture-output-final
-   Result: 4 records normalized; synthetic qualifying India fixture categorized A; infectious-disease mRNA and CAR-T records rejected; mRNA oncology record without an India site excluded.
+   NOT RUN. An earlier revision of this file recorded a run of
+
+       python ctri_mrna_trials.py --fixture data/fixtures/... --output-dir ...
+
+   and reported per-record results. That command could not have executed:
+   ctri_mrna_trials.py does not implement a --fixture argument, and the
+   data/fixtures/ directory is not present in the repository. The claim is
+   withdrawn. README.md documents the same command and is likewise
+   inaccurate until the flag exists.
 
 4. Live HTTP execution from the working container:
-   Not available because outbound DNS/network access from Python/CLI processes was unavailable in this environment. The real research findings were therefore assembled using browser-accessible registry/sponsor sources, while the collector's code path was exercised offline.
+   Not available. Outbound network access from Python/CLI processes was
+   unavailable in the authoring environment, so neither the ClinicalTrials.gov
+   collector nor CTRI record fetching was exercised against a live host. The
+   research findings in FINDINGS.md and data/ were assembled from
+   browser-accessible registry and sponsor sources, not from this collector.
 
-The fixture is explicitly synthetic and is not used as evidence for the research conclusion.
+Nothing in this file should be read as evidence for the research conclusion.
+Every finding must be verified against the primary registry record.
