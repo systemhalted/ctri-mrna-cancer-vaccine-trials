@@ -27,7 +27,9 @@ This is a conservative result, not proof that no such study exists. CTRI Advance
 - `data/deduplicated_candidates.csv`: verified India candidates. It is header-only because none were verified in this run.
 - `data/excluded_near_matches.csv`: active mRNA cancer-vaccine programs found internationally but without a verified India site.
 - `data/ctri_false_positives.csv`: CTRI records useful for testing the classifier's precision.
-- `data/fixtures/clinicaltrials_fixture.json`: offline fixture for validating the collector without network access.
+- `data/fixtures/clinicaltrials_fixture.json`: synthetic ClinicalTrials.gov fixture for validating the collector without network access.
+- `data/fixtures/ctri_record.html`: synthetic CTRI record page for validating the CTRI parser.
+- `classify.py`: the mRNA cancer-vaccine classifier (three evidence axes plus vetoes).
 - `tests/test_classifier.py`: classifier and parser tests.
 - `FINDINGS.md`: research report, candidate categories, contact paths, and limitations.
 - `NOTICE.md`: registry-use, verification, copyright, patient-data, and medical-use safeguards.
@@ -77,6 +79,15 @@ Or save CTRI result pages as HTML and run:
 
 ```bash
 python ctri_mrna_trials.py \
+  --ctri-html-dir ./saved-ctri-records \
+  --output-dir output
+```
+
+Add `--skip-ctgov` to parse saved CTRI records with no network access at all:
+
+```bash
+python ctri_mrna_trials.py \
+  --skip-ctgov \
   --ctri-html-dir ./saved-ctri-records \
   --output-dir output
 ```

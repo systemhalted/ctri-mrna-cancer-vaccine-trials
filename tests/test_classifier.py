@@ -1,12 +1,16 @@
+import pathlib
 import unittest
 
 from ctri_mrna_trials import (
     category,
     find_evidence,
+    load_ctgov_fixture,
     normalize_ctri,
     parse_ctri_html,
     status_to_enum,
 )
+
+FIXTURES = pathlib.Path(__file__).resolve().parents[1] / "data" / "fixtures"
 
 
 class EvidenceTests(unittest.TestCase):
@@ -173,6 +177,47 @@ class CtriFalsePositiveTests(unittest.TestCase):
         self.assertFalse(find_evidence(
             "APCEDEN autologous dendritic-cell immunotherapy in refractory solid tumours"
         ).qualifies)
+
+class FixturePipelineTests(unittest.TestCase):
+    """End-to-end over the bundled synthetic fixtures, with no network."""
+
+    def test_ctgov_fixture_categorises_correctly(self):
+        trials = {t.nct_number: t for t in
+                  load_ctgov_fixture(FIXTURES / "clinicaltrials_fixture.json")}
+        self.assertEqual(len(trials), 4)
+
+        qualifying = trials["NCT09999001"]
+        self.assertEqual(qualifying.category, "A")
+        self.assertTrue(qualifying.qualifies_mrna_cancer_vaccine)
+        self.assertTrue(qualifying.has_verified_india_site)
+
+        covid = trials["NCT09999002"]
+        self.assertFalse(covid.qualifies_mrna_cancer_vaccine)
+        self.assertIn("infectious disease", covid.manual_verification_reason)
+
+        cart = trials["NCT09999003"]
+        self.assertFalse(cart.qualifies_mrna_cancer_vaccine)
+
+        # A genuine mRNA cancer vaccine, but with no India site: it must still
+        # classify as qualifying, and be excluded on the site axis alone.
+        no_india = trials["NCT09999004"]
+        self.assertTrue(no_india.qualifies_mrna_cancer_vaccine)
+        self.assertFalse(no_india.has_verified_india_site)
+        self.assertEqual(no_india.category, "D")
+
+    def test_ctri_record_fixture_parses_every_reported_field(self):
+        html = (FIXTURES / "ctri_record.html").read_text(encoding="utf-8")
+        trial = normalize_ctri(parse_ctri_html(html), "https://ctri.nic.in/example")
+        self.assertIn("CTRI/2026/01/123456", trial.ctri_registration_number)
+        self.assertEqual(trial.nct_number, "NCT09999001")
+        self.assertEqual(trial.trial_phase, "Phase 2")
+        self.assertEqual(trial.recruitment_status, "Open to Recruitment")
+        self.assertIn("Mumbai", trial.indian_trial_sites)
+        self.assertEqual(trial.contact_email, "trials@example.invalid")
+        self.assertIn("18.00", trial.relevant_age_limits)
+        self.assertIn("ECOG", trial.key_inclusion_criteria)
+        self.assertIn("autoimmune", trial.key_exclusion_criteria)
+        self.assertEqual(trial.category, "A")
 
 if __name__ == "__main__":
     unittest.main()

@@ -295,6 +295,18 @@ def collect_ctgov(search_terms: Iterable[str], sleep_seconds: float = 0.35) -> l
     return [normalize_ctgov(s) for s in studies.values()]
 
 
+def load_ctgov_fixture(path: Path) -> list[Trial]:
+    """Normalise ClinicalTrials.gov-shaped records from a local JSON file.
+
+    Accepts either the API envelope ({"studies": [...]}) or a bare list. Used to
+    exercise the pipeline with no network access; the bundled fixture is
+    synthetic and is never evidence for a research conclusion.
+    """
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    studies = payload.get("studies", []) if isinstance(payload, dict) else payload
+    return [normalize_ctgov(s) for s in studies]
+
+
 def canonical_label(label: str) -> str:
     return re.sub(r"[^a-z0-9]+", " ", label.lower()).strip()
 
@@ -410,13 +422,24 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument("--ctri-url", action="append", default=[])
     p.add_argument("--ctri-url-file", type=Path)
     p.add_argument("--ctri-html-dir", type=Path)
+    p.add_argument("--fixture", type=Path,
+                   help="normalise ClinicalTrials.gov records from a local JSON file "
+                        "instead of querying the API (implies --skip-ctgov)")
+    p.add_argument("--skip-ctgov", action="store_true",
+                   help="do not query ClinicalTrials.gov; use for offline CTRI-only runs")
     p.add_argument("--sleep-seconds", type=float, default=0.35)
     return p.parse_args(argv)
 
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
-    trials = collect_ctgov(load_terms(args.search_terms_file), args.sleep_seconds)
+
+    if args.fixture:
+        trials = load_ctgov_fixture(args.fixture)
+    elif args.skip_ctgov:
+        trials = []
+    else:
+        trials = collect_ctgov(load_terms(args.search_terms_file), args.sleep_seconds)
 
     urls = list(args.ctri_url)
     if args.ctri_url_file:
