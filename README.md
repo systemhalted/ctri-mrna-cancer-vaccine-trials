@@ -109,20 +109,40 @@ python ctri_mrna_trials.py \
 
 The search starts broad and then expands by product and sponsor names discovered during review. Terms include:
 
-- mRNA, messenger RNA, RNA vaccine
-- cancer vaccine, tumor vaccine, therapeutic vaccine
-- neoantigen, personalized neoantigen, personalized cancer vaccine
-- individualized vaccine, tumor-specific antigen, mRNA immunotherapy
-- V940, mRNA-4157, intismeran autogene
-- BNT111, BNT113, BNT116, BNT122, autogene cevumeran, RO7198457
-- mRNA-4359, RNA-LPX, RNA lipoplex, FixVac
+`search_terms.txt` holds 90 terms in six groups. Terms are run separately, not
+combined: CTRI does no stemming or synonym expansion, so `tumour vaccine` and
+`tumor vaccine` return different result sets and both are needed.
 
-A study is not classified as qualifying merely because it contains `RNA`, `vaccine`, `immunotherapy`, or `gene therapy`. A qualifying result must have evidence of all of the following:
+- **Platform** -- mRNA, messenger RNA, RNA vaccine, self-amplifying RNA, saRNA, RNA lipoplex, uridine mRNA, nucleoside-modified RNA
+- **Product class** -- cancer vaccine, tumor/tumour vaccine, therapeutic vaccine, neoantigen, neoepitope, personalized/personalised neoantigen, individualized vaccine, tumor-specific antigen, mRNA immunotherapy, iNeST, FixVac
+- **Combined phrases** -- mRNA cancer vaccine, neoantigen mRNA vaccine, individualized neoantigen therapy
+- **Products** -- V940, mRNA-4157, intismeran autogene, BNT111/112/113/115/116/122, autogene cevumeran, RO7198457, mRNA-4359, mRNA-5671, CV9201, CV9202, BI 1361849, RNA-LPX
+- **Sponsors** -- Moderna, BioNTech, Genentech, Merck Sharp, MSD Pharmaceuticals, CureVac, Gritstone, Gennova, Emcure
+- **India-adjacent** -- dendritic cell vaccine, APCEDEN, peptide vaccine cancer, DNA vaccine cancer. Not mRNA vaccines, but they identify Indian investigators and sites with cancer-vaccine trial experience.
 
-1. Cancer/malignancy indication.
-2. An mRNA or messenger-RNA therapeutic mechanism, or a validated known mRNA oncology product.
-3. Therapeutic cancer-vaccine/immunotherapy context such as neoantigens, tumor-associated antigens, personalized/individualized vaccine construction, or a known therapeutic mRNA oncology platform.
-4. A verified Indian study site for categories A-C.
+A study is not classified as qualifying merely because it contains `RNA`,
+`vaccine`, `immunotherapy`, or `gene therapy`. `classify.py` requires evidence
+on three independent axes with no veto firing, plus a site check:
+
+1. **Platform** -- an mRNA/messenger-RNA construct, or a product name that is an
+   mRNA platform by definition.
+2. **Modality** -- active immunisation: vaccine, vaccination, neoantigen,
+   antigen-specific immunotherapy.
+3. **Disease** -- a cancer indication.
+4. **No veto.** Vetoes cover mRNA used as a diagnostic analyte or measured
+   biomarker rather than as the drug, infectious-disease vaccines, prophylactic
+   HPV vaccination, and siRNA/miRNA/antisense.
+5. **A verified Indian study site** for categories A-C.
+
+The axes are deliberately narrow. An earlier revision matched bare terms
+including `breast`, `lung` and `immunotherapy`; because `breast feeding` and
+`prior immunotherapy` appear in the exclusion criteria of most trials, cancer
+and therapeutic evidence fired on almost any record, and four of five hard
+negatives wrongly qualified. Those five cases are now regression tests.
+
+Adjacent modalities -- dendritic cell, peptide, DNA, viral vector, CAR-T --
+downgrade rather than veto, so an mRNA-electroporated dendritic-cell vaccine is
+flagged for review instead of dropped.
 
 ## Patient enrollment safety
 

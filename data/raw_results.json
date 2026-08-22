@@ -85,6 +85,19 @@
       "india_finding": "No India location verified in the current ClinicalTrials.gov/BioNTech location review.",
       "contact": "global-roche-genentech-trials@gene.com; 888-662-6728 (U.S. only)",
       "source": "https://clinicaltrials.gov/study/NCT05968326"
+    },
+    {
+      "nct_number": "NCT05933577",
+      "program": "V940 / mRNA-4157 / intismeran autogene (INTerpath-001)",
+      "indication": "Completely resected stage IIB-IV cutaneous melanoma",
+      "phase": "Phase 3",
+      "status": "Randomisation complete; primary readout announced August 2026 (met RFS and DMFS)",
+      "sponsor": "Merck Sharp & Dohme LLC; Moderna collaboration",
+      "why_mrna": "Synthetic mRNA encoding up to 34 patient-specific neoantigens derived from sequencing the patient's own resected tumour; active individualised immunisation, not passive immunotherapy.",
+      "india_site_verified": false,
+      "india_finding": "No India location verified. 165 sites across 26 countries; the Asian sites named in sponsor and press sources are three in Japan.",
+      "contact": "1-888-577-8839; Trialsites@msd.com",
+      "source": "https://clinicaltrials.gov/study/NCT05933577"
     }
   ],
   "ctri_false_positives": [

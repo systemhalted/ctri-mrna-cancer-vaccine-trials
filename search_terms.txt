@@ -1,32 +1,111 @@
-# Generic mechanism and therapeutic concepts
+# Search terms for locating mRNA therapeutic cancer-vaccine trials.
+#
+# One term per line; blank lines and lines beginning with # are ignored.
+# Terms are run SEPARATELY rather than combined: CTRI does no stemming and no
+# synonym expansion, so "tumour vaccine" and "tumor vaccine" return different
+# result sets and both are needed. The same applies to the -ise/-ize variants.
+
+# --- Platform: the mRNA half of the concept ---
 mRNA
+m-RNA
 messenger RNA
+messenger ribonucleic acid
 RNA vaccine
+RNA-based vaccine
+self-amplifying RNA
+saRNA
+replicon RNA
+nucleoside-modified RNA
+lipid nanoparticle RNA
+RNA lipoplex
+RNA-LPX
+uridine mRNA
+modRNA
+circular RNA vaccine
+in vitro transcribed RNA
+
+# --- Product class: the cancer-vaccine half ---
 cancer vaccine
 tumor vaccine
+tumour vaccine
 therapeutic vaccine
+therapeutic cancer vaccine
 neoantigen
+neo-antigen
+neoepitope
 personalized neoantigen
+personalised neoantigen
 personalized cancer vaccine
+personalised cancer vaccine
 individualized vaccine
+individualised neoantigen
+individualized neoantigen therapy
 tumor-specific antigen
+tumour-specific antigen
+tumor-associated antigen
 mRNA immunotherapy
+antigen-specific immunotherapy
+iNeST
+FixVac
 
-# Investigational products/program names discovered during the investigation
+# --- High-signal combined phrases ---
+mRNA cancer vaccine
+mRNA tumour vaccine
+mRNA neoantigen
+neoantigen mRNA vaccine
+personalized mRNA vaccine
+RNA neoantigen vaccine
+
+# --- Investigational products and programme code names ---
 V940
 mRNA-4157
 intismeran autogene
 BNT111
 BNT112
 BNT113
+BNT115
 BNT116
 BNT122
+BNT142
+BNT152
+BNT211
 autogene cevumeran
 RO7198457
 mRNA-4359
+mRNA-5671
 CV9201
 CV9202
 BI 1361849
-RNA-LPX
-RNA lipoplex
-FixVac
+CV8102
+GRT-C901
+GRANITE
+SLATE
+NECVAX-NEO1
+RH125
+Lipo-MERIT
+
+# --- Sponsors and manufacturers ---
+Moderna
+ModernaTX
+BioNTech
+Genentech
+Merck Sharp
+MSD Pharmaceuticals
+CureVac
+Gritstone
+Transgene
+Gennova
+Gennova Biopharmaceuticals
+Emcure
+Nykode
+Stemirna
+
+# --- India-adjacent programmes ---
+# Not mRNA vaccines themselves. Included because they identify Indian
+# investigators, sponsors and sites with cancer-vaccine trial experience, which
+# is the likeliest route by which an mRNA cancer vaccine trial reaches India.
+dendritic cell vaccine
+autologous dendritic cell
+APCEDEN
+peptide vaccine cancer
+DNA vaccine cancer
