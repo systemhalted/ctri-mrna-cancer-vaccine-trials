@@ -1,4 +1,4 @@
-Validation performed on 2026-08-22; corrected 2026-08-22.
+Validation performed on 2026-08-22; corrected and re-run 2026-08-22.
 
 1. Python syntax check:
    python -m py_compile ctri_mrna_trials.py
@@ -6,25 +6,35 @@ Validation performed on 2026-08-22; corrected 2026-08-22.
 
 2. Unit tests:
    python -m unittest discover -s tests -v
-   Result: 21 tests PASS
+   Result: 23 tests PASS
 
 3. Offline pipeline fixture:
-   NOT RUN. An earlier revision of this file recorded a run of
+   python ctri_mrna_trials.py --fixture data/fixtures/clinicaltrials_fixture.json \
+       --output-dir /tmp/ctri-fixture-output
+   Result: 4 records normalised. NCT09999001 (synthetic India mRNA neoantigen
+   vaccine) categorised A. NCT09999002 rejected -- vetoed as an infectious
+   disease indication. NCT09999003 rejected -- CAR-T, no mRNA platform and no
+   vaccine modality. NCT09999004 classified as a genuine mRNA cancer vaccine but
+   categorised D because no India site is listed.
 
-       python ctri_mrna_trials.py --fixture data/fixtures/... --output-dir ...
+   An earlier revision of this file recorded this step as already run. It could
+   not have been: --fixture was not implemented and data/fixtures/ did not
+   exist. Both now exist and the result above is an actual run.
 
-   and reported per-record results. That command could not have executed:
-   ctri_mrna_trials.py does not implement a --fixture argument, and the
-   data/fixtures/ directory is not present in the repository. The claim is
-   withdrawn. README.md documents the same command and is likewise
-   inaccurate until the flag exists.
+4. Offline CTRI record parsing:
+   python ctri_mrna_trials.py --skip-ctgov --ctri-html-dir <dir> --output-dir <out>
+   Result: 1 record parsed from data/fixtures/ctri_record.html, categorised A,
+   with phase, recruitment status, Indian sites, contact email, age limits and
+   both criteria sections extracted. Before --skip-ctgov existed this path
+   still called ClinicalTrials.gov, so an offline CTRI-only run was impossible.
 
-4. Live HTTP execution from the working container:
+5. Live HTTP execution from the working container:
    Not available. Outbound network access from Python/CLI processes was
    unavailable in the authoring environment, so neither the ClinicalTrials.gov
    collector nor CTRI record fetching was exercised against a live host. The
    research findings in FINDINGS.md and data/ were assembled from
    browser-accessible registry and sponsor sources, not from this collector.
 
-Nothing in this file should be read as evidence for the research conclusion.
-Every finding must be verified against the primary registry record.
+The bundled fixtures are explicitly synthetic, use non-existent NCT ids in the
+NCT09999xxx range, and are never evidence for any research conclusion. Every
+finding must be verified against the primary registry record.

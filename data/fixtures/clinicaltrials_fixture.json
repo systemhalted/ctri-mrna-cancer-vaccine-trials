@@ -1,0 +1,80 @@
+{
+  "_comment": "SYNTHETIC ClinicalTrials.gov-shaped records for offline validation of the collector. These are invented, not real studies, and are never evidence for any research conclusion. NCT ids are deliberately non-existent (NCT09999xxx).",
+  "studies": [
+    {
+      "protocolSection": {
+        "identificationModule": {
+          "nctId": "NCT09999001",
+          "briefTitle": "Individualised neoantigen mRNA vaccine plus pembrolizumab in resected melanoma (SYNTHETIC)",
+          "officialTitle": "A Phase 2 study of a personalised messenger RNA neoantigen vaccine with pembrolizumab in completely resected melanoma (SYNTHETIC FIXTURE)"
+        },
+        "statusModule": {
+          "overallStatus": "RECRUITING",
+          "studyFirstSubmitDate": "2025-03-12",
+          "startDateStruct": {"date": "2025-06-01"}
+        },
+        "sponsorCollaboratorsModule": {"leadSponsor": {"name": "Example Biopharma Ltd (synthetic)"}},
+        "conditionsModule": {"conditions": ["Melanoma", "Solid tumour"]},
+        "designModule": {"phases": ["PHASE2"], "enrollmentInfo": {"count": 120}},
+        "armsInterventionsModule": {
+          "interventions": [
+            {"type": "BIOLOGICAL", "name": "Personalised mRNA neoantigen vaccine",
+             "otherNames": ["messenger RNA vaccine"],
+             "description": "Synthetic mRNA encoding patient-specific neoantigens, 1 mg intramuscularly every 3 weeks"}
+          ]
+        },
+        "eligibilityModule": {
+          "eligibilityCriteria": "Inclusion Criteria: Histologically confirmed completely resected melanoma; ECOG 0-1. Exclusion Criteria: Active autoimmune disease; pregnant or breast feeding women; prior immunotherapy.",
+          "minimumAge": "18 Years", "maximumAge": "75 Years", "sex": "ALL"
+        },
+        "contactsLocationsModule": {
+          "centralContacts": [{"name": "Study Director (synthetic)", "role": "CONTACT", "email": "trials@example.invalid", "phone": "+91 22 0000 0000"}],
+          "overallOfficials": [{"name": "Dr A. Example", "role": "PRINCIPAL_INVESTIGATOR"}],
+          "locations": [
+            {"facility": "Example Cancer Centre (synthetic)", "city": "Mumbai", "state": "Maharashtra", "country": "India", "status": "RECRUITING",
+             "contacts": [{"name": "Ms R. Example", "role": "CONTACT", "email": "ctdesk@example.invalid", "phone": "+91 22 0000 0001"}]}
+          ]
+        }
+      }
+    },
+    {
+      "protocolSection": {
+        "identificationModule": {"nctId": "NCT09999002", "briefTitle": "Self-amplifying mRNA COVID-19 vaccine in healthy adults (SYNTHETIC)"},
+        "statusModule": {"overallStatus": "RECRUITING", "startDateStruct": {"date": "2025-01-10"}},
+        "sponsorCollaboratorsModule": {"leadSponsor": {"name": "Example Vaccines Ltd (synthetic)"}},
+        "conditionsModule": {"conditions": ["COVID-19"]},
+        "designModule": {"phases": ["PHASE1"]},
+        "armsInterventionsModule": {"interventions": [{"type": "BIOLOGICAL", "name": "saRNA SARS-CoV-2 vaccine", "description": "Self-amplifying mRNA vaccine for prevention of COVID-19"}]},
+        "eligibilityModule": {"eligibilityCriteria": "Inclusion Criteria: Healthy adults. Exclusion Criteria: Pregnant or breast feeding; prior immunotherapy; known lung disease.", "minimumAge": "18 Years"},
+        "contactsLocationsModule": {"locations": [{"facility": "Example Hospital (synthetic)", "city": "Pune", "country": "India", "status": "RECRUITING"}]}
+      }
+    },
+    {
+      "protocolSection": {
+        "identificationModule": {"nctId": "NCT09999003", "briefTitle": "Anti-CD19 CAR-T cell therapy in relapsed B-cell lymphoma (SYNTHETIC)"},
+        "statusModule": {"overallStatus": "RECRUITING", "startDateStruct": {"date": "2024-09-01"}},
+        "sponsorCollaboratorsModule": {"leadSponsor": {"name": "Example Cell Therapy (synthetic)"}},
+        "conditionsModule": {"conditions": ["Diffuse large B-cell lymphoma"]},
+        "designModule": {"phases": ["PHASE2"]},
+        "armsInterventionsModule": {"interventions": [{"type": "BIOLOGICAL", "name": "Autologous CD19-directed CAR-T cells", "description": "Lentivirally modified autologous T cells"}]},
+        "eligibilityModule": {"eligibilityCriteria": "Inclusion Criteria: Relapsed refractory DLBCL. Exclusion Criteria: Pregnant or breast feeding; prior immunotherapy within 30 days.", "minimumAge": "18 Years"},
+        "contactsLocationsModule": {"locations": [{"facility": "Example Haematology Institute (synthetic)", "city": "Chennai", "country": "India", "status": "RECRUITING"}]}
+      }
+    },
+    {
+      "protocolSection": {
+        "identificationModule": {"nctId": "NCT09999004", "briefTitle": "Individualised mRNA neoantigen therapy in resected NSCLC, no India site (SYNTHETIC)"},
+        "statusModule": {"overallStatus": "RECRUITING", "startDateStruct": {"date": "2025-02-01"}},
+        "sponsorCollaboratorsModule": {"leadSponsor": {"name": "Example Global Pharma (synthetic)"}},
+        "conditionsModule": {"conditions": ["Non-small cell lung cancer"]},
+        "designModule": {"phases": ["PHASE3"]},
+        "armsInterventionsModule": {"interventions": [{"type": "BIOLOGICAL", "name": "Individualised neoantigen mRNA therapy", "description": "messenger RNA encoding up to 34 patient-specific neoantigens"}]},
+        "eligibilityModule": {"eligibilityCriteria": "Inclusion Criteria: Completely resected stage II-IIIB NSCLC. Exclusion Criteria: Pregnant or breast feeding; prior immunotherapy.", "minimumAge": "18 Years"},
+        "contactsLocationsModule": {"locations": [
+          {"facility": "Example Clinic Berlin (synthetic)", "city": "Berlin", "country": "Germany", "status": "RECRUITING"},
+          {"facility": "Example Clinic Tokyo (synthetic)", "city": "Tokyo", "country": "Japan", "status": "RECRUITING"}
+        ]}
+      }
+    }
+  ]
+}
