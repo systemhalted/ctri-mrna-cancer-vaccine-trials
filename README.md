@@ -2,6 +2,11 @@
 
 Research and collection tooling for identifying therapeutic mRNA cancer-vaccine trials registered in India, with CTRI as the primary registry and ClinicalTrials.gov as a structured cross-check.
 
+> **Not medical advice.** This repository is research support. Trial eligibility is
+> determined solely by the trial investigators. See [`NOTICE.md`](NOTICE.md) for the
+> full research, patient-data and medical-use safeguards, and [Licensing](#licensing)
+> for reuse terms.
+>
 > **Patient-data warning:** Do not store personally identifiable patient information, medical records, pathology reports, imaging, genomic files tied to a person, or other sensitive health information in this repository. Use only verified secure transfer mechanisms provided by trial investigators, hospitals, or sponsors. See [`NOTICE.md`](NOTICE.md).
 
 ## Current finding
@@ -26,6 +31,8 @@ This is a conservative result, not proof that no such study exists. CTRI Advance
 - `tests/test_classifier.py`: classifier and parser tests.
 - `FINDINGS.md`: research report, candidate categories, contact paths, and limitations.
 - `NOTICE.md`: registry-use, verification, copyright, patient-data, and medical-use safeguards.
+- `LICENSE`: MIT license covering the source code.
+- `LICENSE-DATA`: CC BY 4.0 license covering the research data and documentation.
 
 ## How CTRI Advanced Search works
 
@@ -125,3 +132,36 @@ This project does not enroll anyone or transmit patient information. Trial eligi
 - WHO ICTRP search/index cross-checks
 
 See `FINDINGS.md` for study-specific source references and contact paths.
+
+## Licensing
+
+This repository is split-licensed, because it contains two different kinds of
+work.
+
+| What | License | File |
+|---|---|---|
+| Source code (`*.py`, `tests/`, packaging) | **MIT** | [`LICENSE`](LICENSE) |
+| Research data and documentation (`data/`, `docs/`, `FINDINGS.md`, `VALIDATION.txt`, `search_terms.txt`) | **CC BY 4.0** | [`LICENSE-DATA`](LICENSE-DATA) |
+
+MIT keeps the tooling frictionless to reuse, fork and vendor. CC BY 4.0 is the
+normal choice for a curated research dataset: reuse is unrestricted, including
+commercially, but the compilation must be credited.
+
+Two limits are worth stating plainly:
+
+- **The facts are not owned.** CTRI registration numbers, NCT identifiers,
+  sponsor names, recruitment statuses and published contact details are factual
+  information and are not subject to copyright. CC BY 4.0 covers the selection,
+  arrangement and annotation that make up this dataset -- not the underlying
+  facts.
+- **Source material keeps its own terms.** Records retrieved from CTRI,
+  ClinicalTrials.gov, the WHO ICTRP and sponsor websites remain governed by
+  those sources' terms. Check them before redistributing their content.
+
+### Warranty disclaimer
+
+Both licenses are provided without warranty of any kind. Nothing here is medical
+advice or an eligibility determination, and the research snapshot is dated --
+verify every detail against the primary registry record before acting on it.
+[`NOTICE.md`](NOTICE.md) states the research, patient-data and medical-use
+safeguards in full.

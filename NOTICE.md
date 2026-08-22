@@ -31,3 +31,16 @@ This repository is a research aid, not medical advice and not an eligibility det
 ## Copyright and third-party content
 
 Prefer summaries, factual extraction, and links to original registry or sponsor sources over copying substantial third-party text. Third-party material remains subject to its applicable copyright, database, and usage terms.
+
+## Licensing
+
+This repository is split-licensed. Source code is under the MIT license
+([`LICENSE`](LICENSE)); the research data and documentation are under Creative
+Commons Attribution 4.0 International ([`LICENSE-DATA`](LICENSE-DATA)).
+
+Neither license extends to the underlying facts -- registration numbers, NCT
+identifiers, sponsor names, recruitment statuses and published contact details
+are factual information and are not claimed. Records retrieved from CTRI,
+ClinicalTrials.gov, the WHO ICTRP and sponsor sites remain governed by those
+sources' own terms, consistent with the attribution section above.
+
