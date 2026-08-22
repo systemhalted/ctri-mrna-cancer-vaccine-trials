@@ -4,3 +4,10 @@ __pycache__/
 .env
 .DS_Store
 output/
+
+# Never commit patient-identifiable or medical-record data
+data/patient/
+patient-data/
+medical-records/
+*.dcm
+*.dicom
