@@ -1,0 +1,32 @@
+# Generic mechanism and therapeutic concepts
+mRNA
+messenger RNA
+RNA vaccine
+cancer vaccine
+tumor vaccine
+therapeutic vaccine
+neoantigen
+personalized neoantigen
+personalized cancer vaccine
+individualized vaccine
+tumor-specific antigen
+mRNA immunotherapy
+
+# Investigational products/program names discovered during the investigation
+V940
+mRNA-4157
+intismeran autogene
+BNT111
+BNT112
+BNT113
+BNT116
+BNT122
+autogene cevumeran
+RO7198457
+mRNA-4359
+CV9201
+CV9202
+BI 1361849
+RNA-LPX
+RNA lipoplex
+FixVac
