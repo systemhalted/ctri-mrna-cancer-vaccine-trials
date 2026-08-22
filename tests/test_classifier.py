@@ -3,7 +3,10 @@ import unittest
 
 from ctri_mrna_trials import (
     category,
+    fetch_ctgov_ids,
+    normalize_nct_ids,
     find_evidence,
+    ictrp_search_urls,
     load_ctgov_fixture,
     normalize_ctri,
     parse_ctri_html,
@@ -218,6 +221,43 @@ class FixturePipelineTests(unittest.TestCase):
         self.assertIn("ECOG", trial.key_inclusion_criteria)
         self.assertIn("autoimmune", trial.key_exclusion_criteria)
         self.assertEqual(trial.category, "A")
+
+class ByIdLookupTests(unittest.TestCase):
+    """--nct validation. The network path itself is not exercised here."""
+
+    def test_rejects_non_nct_identifiers(self):
+        with self.assertRaises(RuntimeError) as ctx:
+            normalize_nct_ids(["NOTANID"])
+        self.assertIn("NOTANID", str(ctx.exception))
+
+    def test_rejects_malformed_nct_numbers(self):
+        for bad in ("NCT123", "NCT123456789", "nct", "06077760"):
+            with self.assertRaises(RuntimeError, msg=f"accepted {bad!r}"):
+                normalize_nct_ids([bad])
+
+    def test_empty_input_makes_no_request(self):
+        self.assertEqual(normalize_nct_ids([]), [])
+        self.assertEqual(normalize_nct_ids(["", "  "]), [])
+        self.assertEqual(fetch_ctgov_ids([]), [])
+
+    def test_ids_are_upper_cased_and_blanks_dropped(self):
+        self.assertEqual(
+            normalize_nct_ids(["nct06077760", " ", "NCT06623422"]),
+            ["NCT06077760", "NCT06623422"],
+        )
+
+
+class IctrpUrlTests(unittest.TestCase):
+    def test_builds_one_url_per_term_with_encoding(self):
+        urls = dict(ictrp_search_urls(["mRNA", "cancer vaccine"]))
+        self.assertEqual(len(urls), 2)
+        self.assertEqual(urls["mRNA"], "https://trialsearch.who.int/?SearchTermStat=mRNA")
+        self.assertIn("cancer+vaccine", urls["cancer vaccine"])
+
+    def test_handles_terms_needing_escaping(self):
+        _, url = ictrp_search_urls(["RNA-LPX & neoantigen"])[0]
+        self.assertNotIn(" ", url)
+        self.assertIn("%26", url)
 
 if __name__ == "__main__":
     unittest.main()

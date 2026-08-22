@@ -6,7 +6,7 @@ Validation performed on 2026-08-22; corrected and re-run 2026-08-22.
 
 2. Unit tests:
    python -m unittest discover -s tests -v
-   Result: 23 tests PASS
+   Result: 29 tests PASS
 
 3. Offline pipeline fixture:
    python ctri_mrna_trials.py --fixture data/fixtures/clinicaltrials_fixture.json \
@@ -28,7 +28,16 @@ Validation performed on 2026-08-22; corrected and re-run 2026-08-22.
    both criteria sections extracted. Before --skip-ctgov existed this path
    still called ClinicalTrials.gov, so an offline CTRI-only run was impossible.
 
-5. Live HTTP execution from the working container:
+5. By-id lookup and ICTRP URL builder:
+   python ctri_mrna_trials.py --print-ictrp-urls --search-terms-file search_terms.txt
+   Result: 90 search URLs emitted, one per term, correctly escaped.
+
+   python ctri_mrna_trials.py --nct NOTANID --output-dir /tmp/out
+   Result: "error: Not valid NCT identifiers: NOTANID", exit code 2. Ids are
+   validated before any request is made. The network path of --nct was NOT
+   exercised; see item 6.
+
+6. Live HTTP execution from the working container:
    Not available. Outbound network access from Python/CLI processes was
    unavailable in the authoring environment, so neither the ClinicalTrials.gov
    collector nor CTRI record fetching was exercised against a live host. The

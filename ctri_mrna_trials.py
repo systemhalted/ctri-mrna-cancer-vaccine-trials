@@ -20,6 +20,7 @@ import time
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Iterable
+from urllib.parse import urlencode
 
 import requests
 from bs4 import BeautifulSoup
@@ -28,6 +29,7 @@ import classify as _classify
 
 CTGOV_API = "https://clinicaltrials.gov/api/v2/studies"
 CTGOV_STUDY = "https://clinicaltrials.gov/study/{nct_id}"
+ICTRP_SEARCH = "https://trialsearch.who.int/"
 USER_AGENT = "ctri-mrna-cancer-vaccine-research/1.0 (no CTRI CAPTCHA automation)"
 
 DEFAULT_SEARCH_TERMS = [
@@ -295,6 +297,70 @@ def collect_ctgov(search_terms: Iterable[str], sleep_seconds: float = 0.35) -> l
     return [normalize_ctgov(s) for s in studies.values()]
 
 
+def normalize_nct_ids(nct_ids: Iterable[str]) -> list[str]:
+    """Upper-case and validate NCT identifiers, dropping blanks.
+
+    Kept separate from the fetch so the validation can be tested without a
+    network call, and so a typo fails before any request is made.
+    """
+    ids = [x.strip().upper() for x in nct_ids if x and x.strip()]
+    invalid = [x for x in ids if not re.fullmatch(r"NCT\d{8}", x)]
+    if invalid:
+        raise RuntimeError("Not valid NCT identifiers: " + ", ".join(invalid))
+    return ids
+
+
+def fetch_ctgov_ids(nct_ids: Iterable[str], sleep_seconds: float = 0.35) -> list[Trial]:
+    """Fetch specific studies by NCT identifier, without running a term search.
+
+    Two uses. First, following a secondary identifier found in a CTRI record
+    through to the fuller ClinicalTrials.gov record, which is where sites,
+    contacts and eligibility criteria actually live. Second, re-checking the
+    location list of a known trial without repeating the whole sweep -- country
+    lists change without announcement, and for this research the India answer
+    turns entirely on them.
+    """
+    ids = normalize_nct_ids(nct_ids)
+    if not ids:
+        return []
+
+    session = requests.Session()
+    session.headers.update({"User-Agent": USER_AGENT, "Accept": "application/json"})
+    trials: list[Trial] = []
+    for start in range(0, len(ids), 50):
+        batch = ids[start:start + 50]
+        print(f"[ClinicalTrials.gov] fetching {len(batch)} id(s)", file=sys.stderr)
+        response = session.get(
+            CTGOV_API,
+            params={"filter.ids": ",".join(batch), "pageSize": len(batch), "format": "json"},
+            timeout=45,
+        )
+        if response.status_code == 429:
+            raise RuntimeError("ClinicalTrials.gov returned HTTP 429; stop and retry later.")
+        response.raise_for_status()
+        returned = set()
+        for study in response.json().get("studies", []):
+            trial = normalize_ctgov(study)
+            returned.add(trial.nct_number)
+            trials.append(trial)
+        for missing in [x for x in batch if x not in returned]:
+            print(f"[ClinicalTrials.gov] no record returned for {missing}", file=sys.stderr)
+        time.sleep(max(0.0, sleep_seconds))
+    return trials
+
+
+def ictrp_search_urls(terms: Iterable[str]) -> list[tuple[str, str]]:
+    """Build WHO ICTRP search URLs for a human to open.
+
+    ICTRP publishes no open search API, so this cannot be collected
+    automatically. It is worth having anyway: ICTRP mirrors CTRI as well as
+    ClinicalTrials.gov and 15+ other registries, which makes it the most useful
+    fallback when ctri.nic.in is unreachable or its Advanced Search Security
+    Code cannot be completed.
+    """
+    return [(t, ICTRP_SEARCH + "?" + urlencode({"SearchTermStat": t})) for t in terms]
+
+
 def load_ctgov_fixture(path: Path) -> list[Trial]:
     """Normalise ClinicalTrials.gov-shaped records from a local JSON file.
 
@@ -422,6 +488,12 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument("--ctri-url", action="append", default=[])
     p.add_argument("--ctri-url-file", type=Path)
     p.add_argument("--ctri-html-dir", type=Path)
+    p.add_argument("--nct", nargs="*", default=[], metavar="NCT_ID",
+                   help="fetch these specific ClinicalTrials.gov studies by id "
+                        "instead of running the term sweep")
+    p.add_argument("--print-ictrp-urls", action="store_true",
+                   help="print WHO ICTRP search URLs for each term and exit; ICTRP "
+                        "has no public API and mirrors CTRI, so it is searched by hand")
     p.add_argument("--fixture", type=Path,
                    help="normalise ClinicalTrials.gov records from a local JSON file "
                         "instead of querying the API (implies --skip-ctgov)")
@@ -434,12 +506,23 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
 
-    if args.fixture:
-        trials = load_ctgov_fixture(args.fixture)
-    elif args.skip_ctgov:
-        trials = []
-    else:
-        trials = collect_ctgov(load_terms(args.search_terms_file), args.sleep_seconds)
+    if args.print_ictrp_urls:
+        for term, url in ictrp_search_urls(load_terms(args.search_terms_file)):
+            print(f"{term}\t{url}")
+        return 0
+
+    try:
+        if args.fixture:
+            trials = load_ctgov_fixture(args.fixture)
+        elif args.nct:
+            trials = fetch_ctgov_ids(args.nct, args.sleep_seconds)
+        elif args.skip_ctgov:
+            trials = []
+        else:
+            trials = collect_ctgov(load_terms(args.search_terms_file), args.sleep_seconds)
+    except RuntimeError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 2
 
     urls = list(args.ctri_url)
     if args.ctri_url_file:

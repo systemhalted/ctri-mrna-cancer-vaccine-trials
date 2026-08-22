@@ -92,6 +92,36 @@ python ctri_mrna_trials.py \
   --output-dir output
 ```
 
+## Look up specific studies by NCT id
+
+When a CTRI record carries a secondary identifier, follow it through to the
+fuller ClinicalTrials.gov record, which is where sites, contacts and
+eligibility criteria actually live:
+
+```bash
+python ctri_mrna_trials.py \
+  --nct NCT06077760 NCT06623422 NCT05933577 \
+  --output-dir output
+```
+
+This skips the term sweep. It is also the quickest way to re-check the location
+list of a known trial: country lists change without announcement, and for this
+research the India answer turns entirely on them. Ids are validated before any
+request is made, and any id the API does not return is reported on stderr
+rather than silently dropped.
+
+## WHO ICTRP
+
+ICTRP publishes no open search API, so it cannot be collected automatically.
+It is still the most useful fallback when ctri.nic.in is unreachable or its
+Security Code cannot be completed, because it mirrors CTRI as well as
+ClinicalTrials.gov and 15+ other registries. This prints one search URL per
+term to open by hand:
+
+```bash
+python ctri_mrna_trials.py --print-ictrp-urls --search-terms-file search_terms.txt
+```
+
 The script intentionally does not submit the CTRI CAPTCHA-protected Advanced Search form.
 
 ## Offline validation
