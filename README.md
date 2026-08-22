@@ -2,6 +2,8 @@
 
 Research and collection tooling for identifying therapeutic mRNA cancer-vaccine trials registered in India, with CTRI as the primary registry and ClinicalTrials.gov as a structured cross-check.
 
+> **Patient-data warning:** Do not store personally identifiable patient information, medical records, pathology reports, imaging, genomic files tied to a person, or other sensitive health information in this repository. Use only verified secure transfer mechanisms provided by trial investigators, hospitals, or sponsors. See [`NOTICE.md`](NOTICE.md).
+
 ## Current finding
 
 **As of 2026-08-22, this investigation did not verify any therapeutic mRNA cancer-vaccine trial that is currently recruiting, not yet recruiting, or otherwise open at an Indian study site.**
@@ -23,6 +25,7 @@ This is a conservative result, not proof that no such study exists. CTRI Advance
 - `data/fixtures/clinicaltrials_fixture.json`: offline fixture for validating the collector without network access.
 - `tests/test_classifier.py`: classifier and parser tests.
 - `FINDINGS.md`: research report, candidate categories, contact paths, and limitations.
+- `NOTICE.md`: registry-use, verification, copyright, patient-data, and medical-use safeguards.
 
 ## How CTRI Advanced Search works
 
@@ -106,6 +109,8 @@ A study is not classified as qualifying merely because it contains `RNA`, `vacci
 ## Patient enrollment safety
 
 This project does not enroll anyone or transmit patient information. Trial eligibility is determined by trial investigators. For initial contact, give the trial identifier and a concise diagnosis/treatment summary first, and ask the trial team what records they want. Do not email complete medical records, government identifiers, or other sensitive information unless the verified study team explicitly requests a secure transfer method.
+
+**Never commit patient-identifiable medical information to this repository.** Defensive ignore rules cover common patient-data directories and DICOM file extensions, but `.gitignore` is not a security boundary; contributors remain responsible for ensuring sensitive information is never added to Git history.
 
 ## Source set used for the 2026-08-22 snapshot
 
