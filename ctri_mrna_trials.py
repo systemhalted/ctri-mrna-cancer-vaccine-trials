@@ -24,6 +24,8 @@ from typing import Any, Iterable
 import requests
 from bs4 import BeautifulSoup
 
+import classify as _classify
+
 CTGOV_API = "https://clinicaltrials.gov/api/v2/studies"
 CTGOV_STUDY = "https://clinicaltrials.gov/study/{nct_id}"
 USER_AGENT = "ctri-mrna-cancer-vaccine-research/1.0 (no CTRI CAPTCHA automation)"
@@ -37,29 +39,6 @@ DEFAULT_SEARCH_TERMS = [
     "mRNA-4359", "RNA-LPX", "RNA lipoplex", "FixVac",
 ]
 
-KNOWN_MRNA_ONCOLOGY_PRODUCTS = {
-    "v940", "mrna4157", "intismeranautogene", "bnt111", "bnt112", "bnt113",
-    "bnt116", "bnt122", "autogenecevumeran", "ro7198457", "mrna4359",
-    "cv9201", "cv9202", "bi1361849", "rnalpx", "fixvac",
-}
-
-CANCER_TERMS = {
-    "cancer", "tumor", "tumour", "carcinoma", "melanoma", "malignan", "neoplasm",
-    "glioblastoma", "glioma", "lymphoma", "leukemia", "leukaemia", "myeloma",
-    "sarcoma", "mesothelioma", "solid tumor", "solid tumour", "head and neck",
-    "pancreatic", "prostate", "lung", "bladder", "renal cell", "colorectal",
-    "ovarian", "breast",
-}
-MRNA_TERMS = {"mrna", "messenger rna", "messenger-rna", "rna-lpx", "rna lpx", "rna lipoplex"}
-THERAPEUTIC_TERMS = {
-    "cancer vaccine", "tumor vaccine", "tumour vaccine", "therapeutic vaccine",
-    "neoantigen", "neo-antigen", "tumor-associated antigen", "tumour-associated antigen",
-    "tumor-specific antigen", "tumour-specific antigen", "personalized vaccine",
-    "personalised vaccine", "individualized vaccine", "individualised vaccine",
-    "individualized neoantigen", "personalized neoantigen", "immunotherapy",
-    "immunotherapeutic", "antigen-encoding", "antigen encoding",
-}
-
 CATEGORY_A = {"RECRUITING", "ENROLLING_BY_INVITATION"}
 CATEGORY_B = {"NOT_YET_RECRUITING", "SUSPENDED", "UNKNOWN"}
 CATEGORY_C = {"ACTIVE_NOT_RECRUITING", "COMPLETED", "TERMINATED", "WITHDRAWN"}
@@ -67,26 +46,34 @@ CATEGORY_C = {"ACTIVE_NOT_RECRUITING", "COMPLETED", "TERMINATED", "WITHDRAWN"}
 
 @dataclass
 class Evidence:
+    """Evidence that a record describes an mRNA therapeutic cancer vaccine.
+
+    Populated by classify.classify(). Three axes must all fire and no veto may
+    fire. The axes are deliberately narrow: an earlier version matched bare
+    terms such as "breast", "lung" and "immunotherapy", which appear in the
+    boilerplate eligibility criteria of nearly every trial ("breast feeding",
+    "prior immunotherapy"), so cancer and therapeutic evidence fired on records
+    that had nothing to do with cancer vaccines.
+    """
+
     cancer: list[str] = field(default_factory=list)
     mrna: list[str] = field(default_factory=list)
     therapeutic: list[str] = field(default_factory=list)
     known_product: list[str] = field(default_factory=list)
+    vetoes: list[str] = field(default_factory=list)
+    tier: str = ""
+    _rationale: str = ""
 
     @property
     def qualifies(self) -> bool:
-        return bool(self.cancer and (self.mrna or self.known_product) and (self.therapeutic or self.known_product))
+        return self.tier in (_classify.TIER_CONFIRMED, _classify.TIER_PROBABLE)
+
+    @property
+    def needs_manual_review(self) -> bool:
+        return self.tier == _classify.TIER_MANUAL
 
     def rationale(self) -> str:
-        parts = []
-        if self.known_product:
-            parts.append("known mRNA oncology product: " + ", ".join(self.known_product[:4]))
-        if self.mrna:
-            parts.append("mRNA mechanism terms: " + ", ".join(self.mrna[:4]))
-        if self.therapeutic:
-            parts.append("therapeutic vaccine/immunotherapy terms: " + ", ".join(self.therapeutic[:4]))
-        if self.cancer:
-            parts.append("cancer indication terms: " + ", ".join(self.cancer[:4]))
-        return "; ".join(parts)
+        return self._rationale
 
 
 @dataclass
@@ -121,6 +108,9 @@ class Trial:
     qualifies_mrna_cancer_vaccine: bool = False
     has_verified_india_site: bool = False
     manual_verification_reason: str = ""
+    classification_tier: str = ""
+    classification_vetoes: str = ""
+
 
 
 def compact(value: str) -> str:
@@ -128,12 +118,17 @@ def compact(value: str) -> str:
 
 
 def find_evidence(text: str) -> Evidence:
-    low = text.lower()
-    squashed = compact(text)
-    def found(terms: Iterable[str]) -> list[str]:
-        return sorted({t for t in terms if t in low})
-    known = sorted({p for p in KNOWN_MRNA_ONCOLOGY_PRODUCTS if compact(p) in squashed})
-    return Evidence(found(CANCER_TERMS), found(MRNA_TERMS), found(THERAPEUTIC_TERMS), known)
+    """Classify free registry text. See classify.py for the rule and its vetoes."""
+    result = _classify.classify({"summary": text})
+    return Evidence(
+        cancer=result["disease_evidence"],
+        mrna=[e for e in result["platform_evidence"] if not e.startswith("named product")],
+        therapeutic=result["modality_evidence"],
+        known_product=result["named_products"],
+        vetoes=result["vetoes"],
+        tier=result["tier"],
+        _rationale=result["rationale"],
+    )
 
 
 def status_to_enum(status: str) -> str:
@@ -167,6 +162,15 @@ def category(qualifies: bool, has_india: bool, status: str) -> str:
     if status in CATEGORY_C:
         return "C"
     return "D"
+
+
+def disqualification_reason(evidence: Evidence) -> str:
+    """Say why a record was not classified as an mRNA cancer vaccine."""
+    if evidence.qualifies:
+        return ""
+    if evidence.vetoes:
+        return "Ruled out: " + "; ".join(evidence.vetoes)
+    return evidence.rationale() or "Insufficient evidence for an mRNA therapeutic cancer-vaccine mechanism."
 
 
 def join(values: Iterable[Any], sep: str = "; ") -> str:
@@ -257,7 +261,9 @@ def normalize_ctgov(study: dict[str, Any]) -> Trial:
         category=category(evidence.qualifies, bool(india), overall),
         qualifies_mrna_cancer_vaccine=evidence.qualifies,
         has_verified_india_site=bool(india),
-        manual_verification_reason="" if evidence.qualifies else "Insufficient evidence for an mRNA therapeutic cancer-vaccine mechanism.",
+        manual_verification_reason=disqualification_reason(evidence),
+        classification_tier=evidence.tier,
+        classification_vetoes=join(evidence.vetoes),
     )
 
 
@@ -352,7 +358,8 @@ def normalize_ctri(fields: dict[str, str], source_url: str = "") -> Trial:
         clinicaltrials_gov_url=CTGOV_STUDY.format(nct_id=nct) if nct else "",
         category=category(evidence.qualifies, has_india, enum), qualifies_mrna_cancer_vaccine=evidence.qualifies,
         has_verified_india_site=has_india,
-        manual_verification_reason="" if evidence.qualifies else "CTRI record does not contain enough evidence to classify as an mRNA therapeutic cancer vaccine.",
+        manual_verification_reason=disqualification_reason(evidence),
+        classification_tier=evidence.tier, classification_vetoes=join(evidence.vetoes),
     )
 
 
