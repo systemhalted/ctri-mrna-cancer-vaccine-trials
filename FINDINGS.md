@@ -1,0 +1,198 @@
+# Findings: mRNA Cancer-Vaccine Trials Registered/Recruiting in India
+
+**Research snapshot:** 2026-08-22  
+**Primary registry:** Clinical Trials Registry - India (CTRI)  
+**Result:** No qualifying therapeutic mRNA cancer-vaccine study with a verified Indian study site was found in this investigation.
+
+## Executive result
+
+I did **not verify any Category A, B, or C trial** meeting all four core requirements simultaneously:
+
+1. Cancer indication.
+2. Genuine mRNA therapeutic cancer-vaccine / neoantigen-vaccine / closely related mRNA cancer immunotherapy mechanism.
+3. CTRI registration or credible evidence of an Indian arm/site.
+4. A study status that can be tied to an Indian site.
+
+This should be interpreted as **"no verified match found"**, not as proof that no such study exists. CTRI's Advanced Search requires a human-entered Security Code (CAPTCHA), so a fully automated exhaustive keyword sweep of CTRI could not be performed without bypassing an access control. The project did not bypass it.
+
+CTRI states that multicountry trials with India as a participating country are expected to register in CTRI, and that CTRI captures Indian investigators, Indian sites, Indian sample size, and date of enrollment. CTRI records are also supplied to WHO ICTRP. That makes the absence of a CTRI/India site across multiple independent cross-checks meaningful, but not conclusive.
+
+## A. Currently recruiting in India
+
+**No verified qualifying studies found.**
+
+## B. Registered in India but recruitment uncertain/upcoming
+
+**No verified qualifying studies found.**
+
+## C. Previously conducted or no longer recruiting in India
+
+**No verified qualifying mRNA cancer-vaccine studies found.**
+
+India has had cancer immunotherapy/vaccine studies, including autologous dendritic-cell therapy, and it has had mRNA vaccine trials for infectious disease, but these do not satisfy the mRNA therapeutic cancer-vaccine definition used here.
+
+## D. Possible matches requiring manual verification
+
+No specific CTRI record was retained in Category D after validation. The main false-positive patterns were:
+
+- mRNA vaccines for COVID-19, not cancer.
+- Cancer immunotherapy or therapeutic cancer vaccines without an mRNA mechanism.
+- CAR-T/gene-therapy studies, not mRNA cancer vaccines.
+
+These examples are retained in `data/ctri_false_positives.csv` so future searches do not accidentally classify them as matches.
+
+## Closest active international programs checked
+
+These are genuine mRNA oncology trials and therefore useful controls for the search. **None had a verified India site in the current registry/sponsor location listings reviewed on 2026-08-22.** They are not Category A-D India candidates.
+
+| Trial | Program | Cancer / phase | Current status | Why it qualifies as mRNA oncology | India finding |
+|---|---|---|---|---|---|
+| NCT06077760 | V940 / mRNA-4157 / intismeran autogene | Resected NSCLC, Phase 3 | Recruiting | Individualized neoantigen therapy made from mRNA encoding patient-specific tumor mutations | No India location verified |
+| NCT06623422 | V940 / intismeran autogene | Resected NSCLC after neoadjuvant therapy, Phase 3 | Recruiting | Same individualized mRNA neoantigen platform | No India location verified |
+| NCT04534205 | BNT113 | HPV16+ recurrent/metastatic HNSCC, Phase 2/3 | Recruiting | BioNTech explicitly describes BNT113 as an mRNA cancer immunotherapy | No India location verified |
+| NCT05142189 | BNT116 | NSCLC, Phase 1 | Recruiting | Uridine mRNA-lipoplex cancer vaccine encoding six shared lung-cancer antigens | No India location verified |
+| NCT05533697 | mRNA-4359 | Advanced solid tumors, Phase 1/2 | Recruiting | mRNA cancer antigen therapy encoding PD-L1 and IDO1 epitopes | No India location verified |
+| NCT05968326 | BNT122 / autogene cevumeran / RO7198457 | Resected pancreatic ductal adenocarcinoma, Phase 2 | Recruiting | Individualized mRNA cancer vaccine encoding up to 20 patient-specific mutations/neoantigens | No India location verified |
+
+### Sponsor/registry contacts for those international programs
+
+These contacts are useful **only if the diagnosis fits and the family is willing to ask whether an India/Asia site exists or is planned, or whether travel to a listed site is possible.** They are not evidence of India enrollment.
+
+| Trial(s) | Contact path | What to ask |
+|---|---|---|
+| NCT06077760, NCT06623422 | Merck Trial Information Center: **1-888-577-8839**. NCT06077760 also lists **Trialsites@msd.com** on ClinicalTrials.gov. | Give the NCT number and diagnosis; ask whether any India site has opened or is planned and which currently recruiting site is geographically feasible. |
+| NCT04534205, NCT05142189 | BioNTech clinical trials patient information: **+49 6131 9084 ext 0**, **patients@biontech.de** | Give the NCT number and diagnosis; ask whether India or an Asia-Pacific site is open/planned and whether pre-screening can be initiated through a treating oncologist. |
+| NCT05533697 | Moderna Clinical Trials Support Center: **1-877-777-7187**, **clinicaltrials@modernatx.com** | Ask for current site availability for NCT05533697 and whether any India/Asia expansion is planned. |
+| NCT05968326 / GO44479 | Genentech/Roche: **global-roche-genentech-trials@gene.com**, **888-662-6728 (U.S. only)**; ClinicalTrials.gov says the fastest response is Genentech's medical inquiry form. | Ask about GO44479/NCT05968326 and current Asia-Pacific sites. **Do not attach medical records to the initial email/form; the registry explicitly warns against this.** |
+
+## What an initial screening conversation is likely to request
+
+The exact data depend on the cancer and protocol. A trial coordinator commonly needs enough information to determine whether formal pre-screening is worthwhile:
+
+- Exact cancer diagnosis and pathology/histology.
+- Stage and current disease status.
+- Date and type of surgery, if any.
+- Prior chemotherapy, immunotherapy, targeted therapy, radiation, and dates.
+- Molecular/biomarker results relevant to the protocol. Examples: HPV16 and PD-L1 for BNT113; EGFR/ALK/RET and PD-L1 may matter for BNT116 cohorts; tumor mutation/tissue material is fundamental to individualized neoantigen programs.
+- Availability of archived or fresh tumor tissue when the protocol requires it.
+- ECOG/performance status.
+- Recent major laboratory/organ-function results when requested.
+- Major autoimmune disease, immunosuppressive treatment, active infection, or other protocol-relevant comorbidities.
+- Current medicines.
+- Age and reproductive/pregnancy considerations where applicable.
+- Ability to travel repeatedly to the study site.
+
+For the first inquiry, send a short diagnosis/treatment summary and the trial number. Ask the coordinator what documents they want and how to transfer them securely. Do not send a full chart, government identifiers, insurance identifiers, or genetic files to an unverified email address.
+
+**Clinical-trial eligibility must be determined by the trial investigators.**
+
+## Trial-specific eligibility highlights for the international controls
+
+These are not India enrollment recommendations; they help determine whether contacting a sponsor is even sensible.
+
+### BNT113 — NCT04534205
+
+Key features from BioNTech's current trial page:
+
+- Age: 18+.
+- Histologically confirmed recurrent or metastatic HPV16+ head-and-neck squamous cell carcinoma considered incurable by local therapy.
+- PD-L1 CPS >=1.
+- No prior systemic anticancer therapy in the incurable recurrent/metastatic setting, subject to protocol exceptions.
+- Measurable disease by RECIST 1.1.
+- Tumor tissue sample required.
+- Important exclusions include nasopharyngeal primary tumors, certain other recent malignancies, significant immunosuppression, and protocol-defined recent anticancer/immunomodulatory treatments.
+
+### BNT116 — NCT05142189
+
+BioNTech's current page describes multiple NSCLC cohorts, so eligibility varies substantially by cohort. Across cohorts it includes histologically confirmed NSCLC, stage/treatment-line criteria, ECOG limits, and cohort-specific biomarker/therapy requirements. The page explicitly says some EGFR and ALK/RET cohorts enroll only at selected U.S. sites.
+
+### Autogene cevumeran — NCT05968326 / GO44479
+
+The Phase 2 pancreatic study is for resected PDAC. Key features include no prior systemic anticancer treatment for PDAC and no evidence of disease after surgery. Individualized vaccine manufacture depends on tumor/blood material and identifying suitable patient-specific neoepitopes.
+
+## CTRI records deliberately rejected
+
+### CTRI/2021/04/032688 — HGCO19
+
+Gennova mRNA vaccine study, but the condition is **COVID-19 in healthy adults**, not cancer. Excluded.
+
+### CTRI/2021/09/036379 — GEMCOVAC-19
+
+Gennova mRNA vaccine study, but the condition is **COVID-19**, not cancer. Excluded.
+
+### CTRI/2011/07/001917 — APCEDEN
+
+A Phase 2 autologous dendritic-cell immunotherapy study in refractory solid tumors at multiple Indian cancer centers. It is a cancer immunotherapy/vaccine-like study but the CTRI record describes live dendritic-cell therapy, **not an mRNA vaccine mechanism**. Excluded.
+
+### CTRI/2021/04/032727 — HCAR19
+
+Indigenous CAR-T for relapsed/refractory diffuse large B-cell lymphoma. The CTRI record describes lentiviral modification of autologous T cells. This is gene/cell therapy, **not an mRNA therapeutic cancer vaccine**. Excluded.
+
+## Search method
+
+### 1. CTRI mechanics inspection
+
+Reviewed:
+
+- Advanced Search
+- Search by CTRI number
+- Trial-search/search-tip pages
+- Public read-only trial records
+
+Findings:
+
+- Advanced Search is an HTML form with filters for phase, sponsor, Indian recruitment status, geography, keyword, etc.
+- Search submission requires a human-entered Security Code/CAPTCHA.
+- The page does not document a public search API.
+- Public trial detail records are ordinary readable HTML and can be parsed when their URLs are known.
+- CTRI's FAQ says India-participating multicountry studies must be registered in CTRI and identifies the international registry number as a secondary ID.
+
+### 2. Term strategy
+
+Generic mechanism terms:
+
+`mRNA`, `messenger RNA`, `RNA vaccine`, `cancer vaccine`, `tumor vaccine`, `therapeutic vaccine`, `neoantigen`, `personalized neoantigen`, `personalized cancer vaccine`, `individualized vaccine`, `tumor-specific antigen`, `mRNA immunotherapy`.
+
+Product/platform expansion:
+
+`V940`, `mRNA-4157`, `intismeran autogene`, `BNT111`, `BNT112`, `BNT113`, `BNT116`, `BNT122`, `autogene cevumeran`, `RO7198457`, `mRNA-4359`, `CV9201`, `CV9202`, `BI 1361849`, `RNA-LPX`, `RNA lipoplex`, `FixVac`.
+
+### 3. Cross-checks
+
+- Targeted public CTRI indexing and known CTRI record pages.
+- ClinicalTrials.gov current study records and v2 API design.
+- BioNTech, Moderna, Merck, Genentech/Roche sponsor trial pages.
+- WHO ICTRP web-index searches using India + product/generic terms.
+- CDSCO clinical-trial permission pages and targeted product-name searches.
+
+The WHO/CDSCO checks were supportive negative checks, not treated as exhaustive replacements for CTRI.
+
+## Limitations
+
+1. **CTRI CAPTCHA:** automated exhaustive Advanced Search is not possible without human participation. This project did not bypass it.
+2. **Search-engine indexing is incomplete:** a CTRI record can exist without being readily indexed by a general web search.
+3. **Registry status can lag reality:** a nominally recruiting study/site may have paused enrollment, filled a cohort, or not yet opened locally. The site must confirm.
+4. **No patient-specific eligibility assessment was performed:** cancer type, stage, biomarkers, treatment history, and performance status were not supplied in this research request.
+5. **Container network limitation:** the Python runtime used here could not resolve external hosts, so the live HTTP collector could not be executed in-container. Its classifier and export path were executed against an offline fixture and all unit tests passed. The actual 2026-08-22 research snapshot was assembled from browser-accessible authoritative sources.
+
+## Primary sources
+
+- CTRI Advanced Search: https://ctri.nic.in/Clinicaltrials/advancesearchmain.php
+- CTRI FAQ: https://ctri.nic.in/Clinicaltrials/faq.php
+- CTRI HGCO19 record: https://ctri.nic.in/Clinicaltrials/showallp.php?EncHid=&mid1=54697&userName=HGCO19
+- CTRI GEMCOVAC-19 record: https://ctri.nic.in/Clinicaltrials/showallp.php?EncHid=&mid1=60197&userName=covid-19+vaccine
+- CTRI APCEDEN record: https://ctri.nic.in/Clinicaltrials/showallp.php?EncHid=&mid1=3159&userName=CTRI%2F2011%2F07%2F001917
+- CTRI HCAR19 record: https://ctri.nic.in/Clinicaltrials/showallp.php?EncHid=&mid1=45423&userName=A+pilot+study+of+indigenously
+- ClinicalTrials.gov NCT06077760: https://clinicaltrials.gov/study/NCT06077760
+- ClinicalTrials.gov NCT06623422: https://clinicaltrials.gov/study/NCT06623422
+- ClinicalTrials.gov NCT04534205: https://clinicaltrials.gov/study/NCT04534205
+- ClinicalTrials.gov NCT05142189: https://clinicaltrials.gov/study/NCT05142189
+- ClinicalTrials.gov NCT05533697: https://clinicaltrials.gov/study/NCT05533697
+- ClinicalTrials.gov NCT05968326: https://clinicaltrials.gov/study/NCT05968326
+- Merck NCT06077760: https://www.merckclinicaltrials.com/trial/nct06077760/
+- Merck NCT06623422: https://www.merckclinicaltrials.com/trial/nct06623422/
+- BioNTech BNT113-01: https://clinicaltrials.biontech.com/trials/BNT113-01
+- BioNTech BNT116-01: https://clinicaltrials.biontech.com/trials/BNT116-01
+- BioNTech GO44479: https://clinicaltrials.biontech.com/trials/GO44479
+- BioNTech mRNA platforms: https://www.biontech.com/int/en/home/pipeline-and-products/platforms/mrna-platforms.html
+- Moderna pipeline: https://www.modernatx.com/research/product-pipeline
