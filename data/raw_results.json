@@ -1,0 +1,130 @@
+{
+  "as_of": "2026-08-22",
+  "conclusion": "No therapeutic mRNA cancer-vaccine trial with a verified Indian study site was found. This is a conservative 'no verified match found' result, not proof of absence, because CTRI Advanced Search submission is CAPTCHA-protected.",
+  "categories": {
+    "A_currently_recruiting_in_india": [],
+    "B_india_status_uncertain_or_upcoming": [],
+    "C_prior_or_no_longer_recruiting_in_india": [],
+    "D_possible_manual_verification": []
+  },
+  "excluded_active_international_mrna_oncology_trials_no_india_site": [
+    {
+      "nct_number": "NCT06077760",
+      "program": "V940 / mRNA-4157 / intismeran autogene",
+      "indication": "Resected stage II/IIIA/IIIB (N2) NSCLC",
+      "phase": "Phase 3",
+      "status": "Recruiting",
+      "sponsor": "Merck Sharp & Dohme LLC; Moderna collaboration",
+      "why_mrna": "Individualized neoantigen therapy made from mRNA encoding patient-specific tumor mutations.",
+      "india_site_verified": false,
+      "india_finding": "No India location verified in current ClinicalTrials.gov/sponsor location review.",
+      "contact": "1-888-577-8839; Trialsites@msd.com",
+      "source": "https://clinicaltrials.gov/study/NCT06077760"
+    },
+    {
+      "nct_number": "NCT06623422",
+      "program": "V940 / intismeran autogene",
+      "indication": "Resected NSCLC after neoadjuvant treatment",
+      "phase": "Phase 3",
+      "status": "Recruiting",
+      "sponsor": "Merck Sharp & Dohme LLC; Moderna collaboration",
+      "why_mrna": "Individualized mRNA neoantigen therapy.",
+      "india_site_verified": false,
+      "india_finding": "No India location verified in current ClinicalTrials.gov/sponsor location review.",
+      "contact": "1-888-577-8839",
+      "source": "https://clinicaltrials.gov/study/NCT06623422"
+    },
+    {
+      "nct_number": "NCT04534205",
+      "program": "BNT113",
+      "indication": "Unresectable recurrent/metastatic HPV16+ PD-L1+ head and neck squamous cell carcinoma",
+      "phase": "Phase 2/3",
+      "status": "Recruiting",
+      "sponsor": "BioNTech SE",
+      "why_mrna": "BioNTech describes BNT113 as an mRNA cancer immunotherapy targeting HPV16 antigens.",
+      "india_site_verified": false,
+      "india_finding": "No India location verified in current ClinicalTrials.gov/BioNTech location review.",
+      "contact": "+49 6131 9084 ext 0; patients@biontech.de",
+      "source": "https://clinicaltrials.gov/study/NCT04534205"
+    },
+    {
+      "nct_number": "NCT05142189",
+      "program": "BNT116",
+      "indication": "Non-small cell lung cancer",
+      "phase": "Phase 1",
+      "status": "Recruiting",
+      "sponsor": "BioNTech SE",
+      "why_mrna": "Off-the-shelf uridine mRNA-lipoplex cancer vaccine designed to elicit immune responses to six shared NSCLC tumor-associated antigens.",
+      "india_site_verified": false,
+      "india_finding": "No India location verified in current ClinicalTrials.gov/BioNTech location review.",
+      "contact": "+49 6131 9084 ext 0; patients@biontech.de",
+      "source": "https://clinicaltrials.gov/study/NCT05142189"
+    },
+    {
+      "nct_number": "NCT05533697",
+      "program": "mRNA-4359",
+      "indication": "Advanced solid tumors",
+      "phase": "Phase 1/2",
+      "status": "Recruiting",
+      "sponsor": "ModernaTX, Inc.",
+      "why_mrna": "mRNA cancer antigen therapy encoding epitopes from PD-L1 and IDO1 to drive antigen-specific T-cell responses.",
+      "india_site_verified": false,
+      "india_finding": "No India location verified in the current ClinicalTrials.gov location listing.",
+      "contact": "1-877-777-7187; clinicaltrials@modernatx.com",
+      "source": "https://clinicaltrials.gov/study/NCT05533697"
+    },
+    {
+      "nct_number": "NCT05968326",
+      "program": "BNT122 / autogene cevumeran / RO7198457",
+      "indication": "Resected pancreatic ductal adenocarcinoma",
+      "phase": "Phase 2",
+      "status": "Recruiting",
+      "sponsor": "Genentech, Inc.; BioNTech collaborator",
+      "why_mrna": "Therapeutic individualized mRNA cancer vaccine encoding up to 20 patient-specific cancer mutations/neoantigens.",
+      "india_site_verified": false,
+      "india_finding": "No India location verified in the current ClinicalTrials.gov/BioNTech location review.",
+      "contact": "global-roche-genentech-trials@gene.com; 888-662-6728 (U.S. only)",
+      "source": "https://clinicaltrials.gov/study/NCT05968326"
+    }
+  ],
+  "ctri_false_positives": [
+    {
+      "ctri": "CTRI/2021/04/032688",
+      "title": "HGCO19 mRNA COVID-19 vaccine",
+      "status": "Completed/legacy record",
+      "why_excluded": "mRNA vaccine, but infectious disease (COVID-19), not cancer.",
+      "source": "https://ctri.nic.in/Clinicaltrials/showallp.php?EncHid=&mid1=54697&userName=HGCO19"
+    },
+    {
+      "ctri": "CTRI/2021/09/036379",
+      "title": "GEMCOVAC-19 mRNA COVID-19 vaccine",
+      "status": "Completed/legacy record",
+      "why_excluded": "mRNA vaccine, but infectious disease (COVID-19), not cancer.",
+      "source": "https://ctri.nic.in/Clinicaltrials/showallp.php?EncHid=&mid1=60197&userName=covid-19+vaccine"
+    },
+    {
+      "ctri": "CTRI/2011/07/001917",
+      "title": "APCEDEN autologous dendritic-cell therapy in refractory solid tumors",
+      "status": "Completed",
+      "why_excluded": "Cancer immunotherapy/vaccine-like therapy, but CTRI describes live autologous dendritic cells, not an mRNA mechanism.",
+      "source": "https://ctri.nic.in/Clinicaltrials/showallp.php?EncHid=&mid1=3159&userName=CTRI%2F2011%2F07%2F001917"
+    },
+    {
+      "ctri": "CTRI/2021/04/032727",
+      "title": "HCAR19 anti-CD19 CAR-T for relapsed/refractory DLBCL",
+      "status": "Closed to recruitment",
+      "why_excluded": "Cancer gene/cell therapy using lentiviral CAR-T modification, not an mRNA therapeutic cancer vaccine.",
+      "source": "https://ctri.nic.in/Clinicaltrials/showallp.php?EncHid=&mid1=45423&userName=A+pilot+study+of+indigenously"
+    }
+  ],
+  "methodology": {
+    "primary": "CTRI public search/records",
+    "cross_checks": [
+      "ClinicalTrials.gov",
+      "WHO ICTRP web indexing",
+      "CDSCO permission pages",
+      "sponsor clinical-trial pages"
+    ],
+    "captcha_bypassed": false
+  }
+}
