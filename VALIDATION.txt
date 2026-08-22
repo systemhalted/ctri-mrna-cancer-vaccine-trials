@@ -6,7 +6,7 @@ Validation performed on 2026-08-22; corrected 2026-08-22.
 
 2. Unit tests:
    python -m unittest discover -s tests -v
-   Result: 7 tests PASS
+   Result: 21 tests PASS
 
 3. Offline pipeline fixture:
    NOT RUN. An earlier revision of this file recorded a run of
