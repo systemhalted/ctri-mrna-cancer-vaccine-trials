@@ -53,6 +53,28 @@ These are genuine mRNA oncology trials and therefore useful controls for the sea
 | NCT05142189 | BNT116 | NSCLC, Phase 1 | Recruiting | Uridine mRNA-lipoplex cancer vaccine encoding six shared lung-cancer antigens | No India location verified |
 | NCT05533697 | mRNA-4359 | Advanced solid tumors, Phase 1/2 | Recruiting | mRNA cancer antigen therapy encoding PD-L1 and IDO1 epitopes | No India location verified |
 | NCT05968326 | BNT122 / autogene cevumeran / RO7198457 | Resected pancreatic ductal adenocarcinoma, Phase 2 | Recruiting | Individualized mRNA cancer vaccine encoding up to 20 patient-specific mutations/neoantigens | No India location verified |
+| NCT05933577 | V940 / mRNA-4157 / intismeran autogene (INTerpath-001) | Resected stage IIB-IV melanoma, Phase 3 | Randomisation complete; primary readout August 2026 | Same individualized mRNA neoantigen platform | No India location verified; 165 sites in 26 countries, the named Asian sites being three in Japan |
+
+### Two notes on the table above
+
+**NCT05933577 (INTerpath-001) is closed to enrolment but is the reason this
+field is moving.** In August 2026 it met its primary endpoint of recurrence-free
+survival and its key secondary endpoint of distant metastasis-free survival in
+1,137 patients -- the first positive Phase 3 readout for an individualized
+neoantigen therapy and for any mRNA-based cancer therapy. Approvals and
+geographic expansion normally follow a readout like this, so the India answer
+here is more likely to change over the next one to two years than it has over
+the last five. It is listed as a control and as a reason to re-run this search,
+not as an enrollment route. Of its 26 countries, the Asian sites named in
+sponsor and press sources are three in Japan; India is not among them.
+
+**NCT05533697 (mRNA-4359) has by far the widest eligibility door.** Every other
+qualifying programme above requires a specific tumour type and, in the
+INTerpath and autogene cevumeran cases, complete surgical resection plus a
+defined prior-treatment history. mRNA-4359 enrolls advanced solid tumours in
+Phase 1/2. If the diagnosis does not match a resected-NSCLC, resected-melanoma,
+HPV16+ HNSCC or resected-PDAC protocol, this is the one worth asking about
+first. It still has no verified India site.
 
 ### Sponsor/registry contacts for those international programs
 
@@ -167,6 +189,53 @@ Product/platform expansion:
 
 The WHO/CDSCO checks were supportive negative checks, not treated as exhaustive replacements for CTRI.
 
+## Repeating this search by hand
+
+Because CTRI Advanced Search cannot be automated, the sweep has to be redone
+manually. This takes roughly 30 minutes.
+
+### CTRI
+
+1. Open <https://ctri.nic.in/Clinicaltrials/advancesearchmain.php> and complete
+   the Security Code.
+2. Run the terms in `search_terms.txt` **separately**. CTRI does not expand
+   synonyms, so one combined query will not substitute for many narrow ones,
+   and the British/American spellings return different sets.
+3. Leave recruitment status **unfiltered** on the first pass. A study listed as
+   "Not Yet Recruiting" is exactly the kind worth finding early.
+4. For each hit read: Intervention, Recruitment Status of Trial (India),
+   Site/s of Study, Contact Person (Public Query), Inclusion/Exclusion
+   Criteria, and Secondary IDs for an NCT number.
+5. Apply the rule in `classify.py`: is the **intervention itself** an mRNA
+   construct administered to provoke an immune response against the tumour? If
+   the mRNA is being measured rather than administered, it does not qualify.
+6. Save any candidate record page as HTML and run it through the parser:
+   `python ctri_mrna_trials.py --skip-ctgov --ctri-html-dir <dir> --output-dir output`
+
+### ClinicalTrials.gov
+
+Run the collector, which needs no CAPTCHA:
+
+```bash
+python ctri_mrna_trials.py --search-terms-file search_terms.txt --output-dir output
+```
+
+Then open each control study and read its **Contacts and Locations** list
+directly, using Ctrl-F for "India". The country lists are the thing that
+changes, and they change without announcement.
+
+### WHO ICTRP
+
+<https://trialsearch.who.int/> mirrors CTRI as well as ClinicalTrials.gov and
+15+ other registries, so it catches records a single-registry search misses and
+it still works when ctri.nic.in is down.
+
+### When to re-run
+
+Set a ClinicalTrials.gov saved search with email alerts for
+`mRNA cancer vaccine` filtered to Location: India. That converts this from a
+task someone has to remember into a notification.
+
 ## Limitations
 
 1. **CTRI CAPTCHA:** automated exhaustive Advanced Search is not possible without human participation. This project did not bypass it.
@@ -189,6 +258,8 @@ The WHO/CDSCO checks were supportive negative checks, not treated as exhaustive 
 - ClinicalTrials.gov NCT05142189: https://clinicaltrials.gov/study/NCT05142189
 - ClinicalTrials.gov NCT05533697: https://clinicaltrials.gov/study/NCT05533697
 - ClinicalTrials.gov NCT05968326: https://clinicaltrials.gov/study/NCT05968326
+- ClinicalTrials.gov NCT05933577: https://clinicaltrials.gov/study/NCT05933577
+- Merck INTerpath-001 Phase 3 readout (August 2026): https://www.merck.com/news/merck-and-moderna-announce-phase-3-interpath-001-trial-of-intismeran-autogene-plus-keytruda-met-endpoints-of-recurrence-free-survival-rfs-and-distant-metastasis-free-survival-dmfs-in-patient/
 - Merck NCT06077760: https://www.merckclinicaltrials.com/trial/nct06077760/
 - Merck NCT06623422: https://www.merckclinicaltrials.com/trial/nct06623422/
 - BioNTech BNT113-01: https://clinicaltrials.biontech.com/trials/BNT113-01
