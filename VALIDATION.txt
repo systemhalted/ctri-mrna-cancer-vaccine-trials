@@ -1,0 +1,18 @@
+Validation performed on 2026-08-22
+
+1. Python syntax check:
+   python -m py_compile ctri_mrna_trials.py
+   Result: PASS
+
+2. Unit tests:
+   python -m unittest discover -s tests -v
+   Result: 8 tests PASS
+
+3. Offline pipeline fixture:
+   python ctri_mrna_trials.py --fixture data/fixtures/clinicaltrials_fixture.json --output-dir /tmp/ctri-fixture-output-final
+   Result: 4 records normalized; synthetic qualifying India fixture categorized A; infectious-disease mRNA and CAR-T records rejected; mRNA oncology record without an India site excluded.
+
+4. Live HTTP execution from the working container:
+   Not available because outbound DNS/network access from Python/CLI processes was unavailable in this environment. The real research findings were therefore assembled using browser-accessible registry/sponsor sources, while the collector's code path was exercised offline.
+
+The fixture is explicitly synthetic and is not used as evidence for the research conclusion.
