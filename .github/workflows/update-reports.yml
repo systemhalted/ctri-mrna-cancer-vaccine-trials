@@ -40,7 +40,6 @@ jobs:
       issues: write
     env:
       BRANCH: automated/report-refresh
-      SWEEP_DIR: ${{ runner.temp }}/sweep
 
     steps:
       - uses: actions/checkout@v4
@@ -62,6 +61,11 @@ jobs:
       - name: Sweep ClinicalTrials.gov
         run: |
           set -euo pipefail
+          # $RUNNER_TEMP, not the workspace: the raw sweep is an intermediate,
+          # and keeping it outside the checkout stops `git add -A` seeing it.
+          # It cannot be a job-level env var -- the `runner` context is not
+          # available there.
+          SWEEP_DIR="$RUNNER_TEMP/sweep"
           for attempt in 1 2 3; do
             if python ctri_mrna_trials.py \
                  --search-terms-file search_terms.txt \
@@ -79,7 +83,7 @@ jobs:
         run: |
           set -euo pipefail
           python update_reports.py \
-            --sweep-json "$SWEEP_DIR/raw_results.json" \
+            --sweep-json "$RUNNER_TEMP/sweep/raw_results.json" \
             --min-records "${{ inputs.min_records || '1' }}" \
             | tee "$RUNNER_TEMP/summary.json"
           python - <<'PY' >> "$GITHUB_OUTPUT"

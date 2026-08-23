@@ -61,11 +61,22 @@ Validation performed on 2026-08-22; corrected and re-run 2026-08-22.
    An empty sweep exited 3 with the existing report files untouched, confirming
    a registry outage cannot be committed as "no trials found".
 
-   The workflow's own steps were checked with `bash -n` on every run block and
-   the sweep/report/change-detection sequence was simulated on a copy of the
-   repository. The live GitHub Actions run itself has NOT been observed: the
-   authoring environment has no outbound access to clinicaltrials.gov, so the
-   first real sweep will be the workflow's first scheduled or dispatched run.
+   The workflow file is validated with `actionlint .github/workflows/*.yml`
+   (exit 0), and every run block was checked with `bash -n`. The
+   sweep/report/change-detection sequence was simulated on a copy of the
+   repository, including the first-run case where the output paths are still
+   untracked.
+
+   The first pushed revision was rejected by GitHub as an invalid workflow file:
+   it read ${{ runner.temp }} in the job-level `env` block, where the `runner`
+   context is not available. The run failed with no jobs scheduled. actionlint
+   reports this; run it before pushing a workflow change.
+
+   The live GitHub Actions run itself has NOT been observed end to end: the
+   authoring environment has no outbound access to clinicaltrials.gov, and
+   workflow_dispatch is only available once the workflow is on the default
+   branch. The first real sweep will be the workflow's first dispatched or
+   scheduled run; dispatch it once with dry_run=true before relying on it.
 
 The bundled fixtures are explicitly synthetic, use non-existent NCT ids in the
 NCT09999xxx range, and are never evidence for any research conclusion. Every
