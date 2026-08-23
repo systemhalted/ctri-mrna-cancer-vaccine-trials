@@ -44,6 +44,29 @@ Validation performed on 2026-08-22; corrected and re-run 2026-08-22.
    research findings in FINDINGS.md and data/ were assembled from
    browser-accessible registry and sponsor sources, not from this collector.
 
+7. Report generation and the scheduled workflow (added 2026-08-23):
+   python -m unittest discover -s tests
+   Result: 50 tests PASS (29 existing, 21 new for update_reports.py).
+
+   python ctri_mrna_trials.py --fixture data/fixtures/clinicaltrials_fixture.json \
+       --output-dir /tmp/sweep
+   python update_reports.py --sweep-json /tmp/sweep/raw_results.json \
+       --data-dir /tmp/rep/data --report /tmp/rep/report.md --source "synthetic fixture"
+   Result: 4 records rendered; the synthetic India record listed as a candidate,
+   the other three listed for manual verification with a stated reason each.
+
+   Re-running with a later --as-of produced a byte-identical tree, confirming
+   the scheduled workflow commits nothing when the results are unchanged.
+
+   An empty sweep exited 3 with the existing report files untouched, confirming
+   a registry outage cannot be committed as "no trials found".
+
+   The workflow's own steps were checked with `bash -n` on every run block and
+   the sweep/report/change-detection sequence was simulated on a copy of the
+   repository. The live GitHub Actions run itself has NOT been observed: the
+   authoring environment has no outbound access to clinicaltrials.gov, so the
+   first real sweep will be the workflow's first scheduled or dispatched run.
+
 The bundled fixtures are explicitly synthetic, use non-existent NCT ids in the
 NCT09999xxx range, and are never evidence for any research conclusion. Every
 finding must be verified against the primary registry record.

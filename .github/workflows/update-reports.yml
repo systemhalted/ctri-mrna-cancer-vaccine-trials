@@ -1,0 +1,206 @@
+name: Update trial reports
+
+# Sweeps ClinicalTrials.gov on a schedule and regenerates the automated report.
+# It opens a pull request when the results change; it never pushes to the
+# default branch, and it never edits the curated FINDINGS.md or
+# data/raw_results.json, which are compiled by hand from primary sources.
+#
+# CTRI Advanced Search is not swept. Submitting that form requires a
+# human-entered Security Code, and this project does not automate, solve or
+# bypass it.
+
+on:
+  schedule:
+    # 06:15 UTC every Monday.
+    - cron: '15 6 * * 1'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Run the sweep and print the diff, but do not commit or open a PR'
+        type: boolean
+        default: false
+      min_records:
+        description: 'Fail without writing if the sweep returns fewer records than this'
+        type: string
+        default: '1'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: update-reports
+  cancel-in-progress: false
+
+jobs:
+  sweep:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    env:
+      BRANCH: automated/report-refresh
+      SWEEP_DIR: ${{ runner.temp }}/sweep
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run unit tests
+        # A sweep run by a broken classifier is worse than no sweep: it would
+        # commit a report nobody can trust.
+        run: python -m unittest discover -s tests
+
+      - name: Sweep ClinicalTrials.gov
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3; do
+            if python ctri_mrna_trials.py \
+                 --search-terms-file search_terms.txt \
+                 --output-dir "$SWEEP_DIR"; then
+              exit 0
+            fi
+            echo "sweep attempt $attempt failed" >&2
+            sleep $(( attempt * 30 ))
+          done
+          echo "::error::ClinicalTrials.gov sweep failed after 3 attempts" >&2
+          exit 1
+
+      - name: Regenerate reports
+        id: report
+        run: |
+          set -euo pipefail
+          python update_reports.py \
+            --sweep-json "$SWEEP_DIR/raw_results.json" \
+            --min-records "${{ inputs.min_records || '1' }}" \
+            | tee "$RUNNER_TEMP/summary.json"
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import json, os, pathlib
+          s = json.loads(pathlib.Path(os.environ["RUNNER_TEMP"], "summary.json").read_text())
+          print(f"records={s['records']}")
+          print(f"india_candidates={s['india_candidates']}")
+          print(f"as_of={s['as_of']}")
+          print(f"last_checked={s['last_checked']}")
+          PY
+
+      - name: Detect changes
+        id: diff
+        run: |
+          set -euo pipefail
+          # Stage first: on the very first run these paths are untracked, and
+          # `git diff` alone does not see untracked files.
+          git add -A -- data/automated reports
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+          git --no-pager diff --cached --stat
+
+      - name: Job summary
+        run: |
+          {
+            echo "## Trial sweep ${{ steps.report.outputs.last_checked }}"
+            echo
+            echo "- Records normalised: ${{ steps.report.outputs.records }}"
+            echo "- India-verified candidates: ${{ steps.report.outputs.india_candidates }}"
+            echo "- Results as of: ${{ steps.report.outputs.as_of }}"
+            echo "- Report changed: ${{ steps.diff.outputs.changed }}"
+            echo
+            if [ "${{ steps.diff.outputs.changed }}" = "true" ]; then
+              echo '```diff'
+              git --no-pager diff --cached | head -300
+              echo '```'
+            else
+              echo "No change since the last committed sweep."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Open pull request
+        if: steps.diff.outputs.changed == 'true' && inputs.dry_run != true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RECORDS: ${{ steps.report.outputs.records }}
+          CANDIDATES: ${{ steps.report.outputs.india_candidates }}
+          AS_OF: ${{ steps.report.outputs.as_of }}
+        run: |
+          set -euo pipefail
+          git config user.name  'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+          # Rebuild the branch from the commit under test each run, so the PR is
+          # always a single reviewable diff against the default branch.
+          git checkout -B "$BRANCH"
+          git add -A -- data/automated reports
+          git commit -m "data: refresh automated trial sweep ($AS_OF)" \
+                     -m "$RECORDS records normalised; $CANDIDATES with a verified Indian site."
+          # Fetch the tracking ref so --force-with-lease has a lease to check
+          # against; on the first run the branch does not exist yet.
+          git fetch origin "$BRANCH:refs/remotes/origin/$BRANCH" 2>/dev/null || true
+          git push --force-with-lease -u origin "$BRANCH"
+
+          body="$(cat <<EOF
+          Automated sweep of the public ClinicalTrials.gov v2 API using every term in
+          \`search_terms.txt\` with \`India\` as the location query.
+
+          - Records normalised: **$RECORDS**
+          - Classified as an mRNA cancer vaccine with a verified Indian site: **$CANDIDATES**
+          - Results as of: **$AS_OF**
+
+          Only \`data/automated/\` and \`reports/AUTOMATED_SWEEP.md\` are touched. The
+          curated \`FINDINGS.md\` and \`data/raw_results.json\` are compiled by hand from
+          primary sources and are never modified by this workflow.
+
+          **Every row here is a machine classification, not a verified finding and not an
+          eligibility determination.** Check each record against its primary registry
+          entry before merging anything into the curated report. CTRI Advanced Search is
+          not covered: submitting it requires a human-entered Security Code, which this
+          project does not automate.
+          EOF
+          )"
+
+          # Reuse the open PR if there is one; a previous PR that was merged or
+          # closed must not be resurrected, so only open ones count.
+          pr="$(gh pr list --head "$BRANCH" --state open --limit 1 --json number --jq '.[0].number // empty')"
+          if [ -n "$pr" ]; then
+            gh pr edit "$pr" --title "data: refresh automated trial sweep ($AS_OF)" --body "$body"
+          else
+            gh pr create --base "${{ github.ref_name }}" --head "$BRANCH" \
+              --title "data: refresh automated trial sweep ($AS_OF)" --body "$body"
+          fi
+
+      - name: Flag a possible India candidate
+        # The point of the schedule: say something loudly if a trial that looks
+        # like an mRNA cancer vaccine turns up an Indian site. One open issue at
+        # a time -- a weekly duplicate of the same finding is just noise.
+        if: steps.report.outputs.india_candidates != '0' && inputs.dry_run != true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          # Create the label before listing by it: `gh issue list --label` on a
+          # label that does not exist yet is an error, and this step runs under
+          # `set -e`.
+          gh label create india-candidate \
+            --description 'Sweep found a possible India mRNA cancer-vaccine trial' \
+            --color B60205 2>/dev/null || true
+          existing="$(gh issue list --state open --label india-candidate --limit 1 --json number --jq 'length')"
+          if [ "$existing" != "0" ]; then
+            echo "An open india-candidate issue already exists; not opening another."
+            exit 0
+          fi
+          gh issue create --label india-candidate \
+            --title "Possible India mRNA cancer-vaccine candidate (${{ steps.report.outputs.as_of }})" \
+            --body "The scheduled sweep classified ${{ steps.report.outputs.india_candidates }} record(s) as a therapeutic mRNA cancer vaccine with a verified Indian study site.
+
+          See \`reports/AUTOMATED_SWEEP.md\` and [this run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}).
+
+          This is a machine classification and needs verification against the primary registry record before it goes anywhere near \`FINDINGS.md\`."
