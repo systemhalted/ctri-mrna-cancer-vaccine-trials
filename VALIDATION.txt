@@ -100,8 +100,15 @@ Validation performed on 2026-08-22; corrected and re-run 2026-08-22.
    regenerated files straight to the default branch. The curated files are
    protected by the staged path list (data/automated and reports only), not by
    the pull request, so that protection is unchanged. The pull-requests: write
-   permission was removed as no longer needed, and the abandoned
-   automated/report-refresh branch was deleted.
+   permission was removed as no longer needed. The abandoned
+   automated/report-refresh branch still exists and can be deleted by hand; it
+   holds only regenerated sweep output.
+
+   Verified live on 2026-09-10 (run 34432504273, dispatched with dry_run=false):
+   314 records normalised, 0 with a verified Indian site, 0 classified as an
+   mRNA cancer vaccine while awaiting an India site. The run committed ddd013f
+   to main as github-actions[bot], touching only data/automated/ and reports/.
+   That is the commit path the three scheduled runs had been failing on.
 
    Lesson recorded: dry_run=true does not exercise the commit path. Verify a
    workflow that writes by letting it write once.
