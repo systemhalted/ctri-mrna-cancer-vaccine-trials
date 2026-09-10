@@ -108,17 +108,18 @@ and on demand from the Actions tab. Each run:
    retrying up to three times with backoff;
 3. regenerates `data/automated/` and `reports/AUTOMATED_SWEEP.md` via
    `update_reports.py`;
-4. opens (or updates) a pull request **only if the results changed**, and opens
-   an issue if any record is classified as an mRNA cancer vaccine with a
+4. commits the result to the default branch **only if the results changed**, and
+   opens an issue if any record is classified as an mRNA cancer vaccine with a
    verified Indian site.
 
 Three properties are deliberate:
 
-- **It never writes to the default branch, and never edits the curated files.**
-  `FINDINGS.md` and `data/raw_results.json` are compiled by hand from primary
-  sources. Everything the workflow produces lands in `data/automated/` and
-  `reports/`, behind a pull request, for a human to check against the primary
-  registry record before any of it informs the curated report.
+- **It never edits the curated files.** `FINDINGS.md` and `data/raw_results.json`
+  are compiled by hand from primary sources. The workflow stages only
+  `data/automated/` and `reports/`, so the curated research record cannot reach
+  an automated commit. Everything it writes is machine classification awaiting
+  verification; nothing moves from there into `FINDINGS.md` without a human
+  confirming it against the primary registry record.
 - **It is deterministic.** Nothing in the generated files depends on the wall
   clock: the `as_of` date advances only when the underlying records change, so
   an unchanged sweep leaves nothing to commit and the repository does not
@@ -128,6 +129,15 @@ Three properties are deliberate:
   (default 1) makes the run fail without writing if the sweep returns fewer
   records than expected, so a registry outage cannot be committed as "no trials
   found".
+
+The report leads with the records that matter. Category D holds hundreds of
+ruled-out studies, so the review table sorts the ones that **pass** the
+classifier but list no Indian site to the top, and counts them in the headline.
+Those are a location-list change away from category A, and country lists change
+without announcement -- which is the reason to sweep weekly at all.
+
+Dispatch it by hand from the Actions tab with **`dry_run: true`** to run the real
+sweep and print the diff to the run summary without committing anything.
 
 It does not sweep CTRI. Submitting CTRI Advanced Search requires a
 human-entered Security Code, and this project does not automate, solve or bypass

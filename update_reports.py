@@ -100,6 +100,31 @@ def india_candidates(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
             if r.get("qualifies_mrna_cancer_vaccine") and r.get("has_verified_india_site")]
 
 
+def awaiting_india_site(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Records that pass the classifier but have no confirmed Indian site.
+
+    This is the watch list. Each one is a genuine mRNA cancer vaccine whose
+    location list is the only thing between it and category A, and country
+    lists change without announcement -- which is the reason to sweep weekly at
+    all. Everything else in category D is a record the classifier ruled out.
+    """
+    return [r for r in records
+            if r.get("qualifies_mrna_cancer_vaccine") and not r.get("has_verified_india_site")]
+
+
+def review_order(record: dict[str, Any]) -> tuple[int, str, str]:
+    """Sort the watch list to the top of the review table.
+
+    Category D holds hundreds of records, nearly all of them ruled out. Sorted
+    by registry id alone the table opens on whichever trial happens to hold the
+    lowest NCT number -- typically something from the early 2000s with no
+    bearing on this search -- and buries the handful worth a human's time.
+    """
+    return (0 if record.get("qualifies_mrna_cancer_vaccine") else 1,
+            str(record.get("registry_id", "")),
+            str(record.get("trial_title", "")))
+
+
 def cell(value: Any) -> str:
     text = " ".join(str(value or "").split())
     if len(text) > 140:
@@ -180,16 +205,33 @@ def render_report(records: list[dict[str, Any]], as_of: str, source: str,
             "",
         ]
     else:
-        lines += [NO_CANDIDATE_NOTE, "", "See `FINDINGS.md` for the curated snapshot "
-                  "and the sources behind it.", ""]
+        lines += [NO_CANDIDATE_NOTE, ""]
+        waiting_now = awaiting_india_site(records)
+        if waiting_now:
+            lines += [
+                f"{len(waiting_now)} record(s) do classify as an mRNA cancer vaccine "
+                "but list no Indian site; they head the review table below.",
+                "",
+            ]
+        lines += ["See `FINDINGS.md` for the curated snapshot and the sources behind "
+                  "it.", ""]
 
     lines += ["## Categories", "", "| Category | Records |", "|---|---|"]
     for key, label in CATEGORY_LABELS.items():
         lines.append(f"| {label} | {counts.get(key, 0)} |")
     lines.append("")
 
-    review = [r for r in records if r.get("category") == "D"]
+    review = sorted([r for r in records if r.get("category") == "D"], key=review_order)
+    waiting = awaiting_india_site(records)
     lines += ["## Flagged for manual verification", ""]
+    if waiting:
+        lines += [
+            f"**{len(waiting)} record(s) classify as an mRNA cancer vaccine but list "
+            "no Indian study site.** They are first in the table below. A country "
+            "list can change without announcement, so these are the records to "
+            "re-check against the primary registry entry.",
+            "",
+        ]
     if review:
         shown = [dict(r, _review_reason=review_reason(r)) for r in review[:review_limit]]
         lines += table(shown, REVIEW_COLUMNS)
@@ -293,11 +335,13 @@ def main(argv: list[str] | None = None) -> int:
                   args.source, args.review_limit)
 
     candidates = india_candidates(records)
+    waiting = awaiting_india_site(records)
     print(json.dumps({
         "records": len(records),
         "categories": counts_by_category(records),
         "india_candidates": len(candidates),
         "india_candidate_ids": [r.get("registry_id", "") for r in candidates],
+        "awaiting_india_site": len(waiting),
         "as_of": as_of,
         "last_checked": today,
         "results_changed": unchanged_as_of is None,

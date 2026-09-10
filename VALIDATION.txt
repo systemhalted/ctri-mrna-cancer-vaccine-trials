@@ -78,6 +78,34 @@ Validation performed on 2026-08-22; corrected and re-run 2026-08-22.
    branch. The first real sweep will be the workflow's first dispatched or
    scheduled run; dispatch it once with dry_run=true before relying on it.
 
+8. Live workflow execution (2026-09-10):
+   The first live sweep ran on 2026-08-23 and succeeded: 315 records normalised
+   from ClinicalTrials.gov, 0 classified as an mRNA cancer vaccine with a
+   verified Indian study site. That independently reproduces the FINDINGS.md
+   result through a separate code path. It was dispatched with dry_run=true.
+
+   The three scheduled runs that followed (2026-08-24, 08-31, 09-07) all FAILED,
+   at the one step dry_run had skipped:
+
+     pull request create failed: GraphQL: GitHub Actions is not permitted
+     to create or approve pull requests (createPullRequest)
+
+   Sweep, report generation, commit and branch push all succeeded in each run;
+   only PR creation failed. The cause is a repository setting -- Settings ->
+   Actions -> General -> Workflow permissions -> "Allow GitHub Actions to create
+   and approve pull requests" -- which is off by default and overrides the
+   pull-requests: write permission the workflow declares.
+
+   Resolved by dropping the pull request: the workflow now commits the
+   regenerated files straight to the default branch. The curated files are
+   protected by the staged path list (data/automated and reports only), not by
+   the pull request, so that protection is unchanged. The pull-requests: write
+   permission was removed as no longer needed, and the abandoned
+   automated/report-refresh branch was deleted.
+
+   Lesson recorded: dry_run=true does not exercise the commit path. Verify a
+   workflow that writes by letting it write once.
+
 The bundled fixtures are explicitly synthetic, use non-existent NCT ids in the
 NCT09999xxx range, and are never evidence for any research conclusion. Every
 finding must be verified against the primary registry record.

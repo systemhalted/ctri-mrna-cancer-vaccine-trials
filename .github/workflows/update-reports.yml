@@ -1,9 +1,12 @@
 name: Update trial reports
 
-# Sweeps ClinicalTrials.gov on a schedule and regenerates the automated report.
-# It opens a pull request when the results change; it never pushes to the
-# default branch, and it never edits the curated FINDINGS.md or
-# data/raw_results.json, which are compiled by hand from primary sources.
+# Sweeps ClinicalTrials.gov on a schedule and regenerates the automated report,
+# committing the result to the default branch when it changes.
+#
+# It writes ONLY data/automated/ and reports/. It never edits the curated
+# FINDINGS.md or data/raw_results.json, which are compiled by hand from primary
+# sources -- that separation is enforced by the paths staged below, and it is
+# what keeps the machine output from contaminating the research record.
 #
 # CTRI Advanced Search is not swept. Submitting that form requires a
 # human-entered Security Code, and this project does not automate, solve or
@@ -36,13 +39,17 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      pull-requests: write
       issues: write
     env:
-      BRANCH: automated/report-refresh
+      TARGET: ${{ github.ref_name }}
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Full history: the commit step may need to rebase onto a tip that
+          # moved while the sweep ran, and rebase is unreliable on a shallow
+          # clone.
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:
@@ -91,6 +98,7 @@ jobs:
           s = json.loads(pathlib.Path(os.environ["RUNNER_TEMP"], "summary.json").read_text())
           print(f"records={s['records']}")
           print(f"india_candidates={s['india_candidates']}")
+          print(f"awaiting_india_site={s['awaiting_india_site']}")
           print(f"as_of={s['as_of']}")
           print(f"last_checked={s['last_checked']}")
           PY
@@ -116,6 +124,7 @@ jobs:
             echo
             echo "- Records normalised: ${{ steps.report.outputs.records }}"
             echo "- India-verified candidates: ${{ steps.report.outputs.india_candidates }}"
+            echo "- Classified but awaiting an India site: ${{ steps.report.outputs.awaiting_india_site }}"
             echo "- Results as of: ${{ steps.report.outputs.as_of }}"
             echo "- Report changed: ${{ steps.diff.outputs.changed }}"
             echo
@@ -128,58 +137,36 @@ jobs:
             fi
           } >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Open pull request
+      - name: Commit the refreshed report
         if: steps.diff.outputs.changed == 'true' && inputs.dry_run != true
         env:
-          GH_TOKEN: ${{ github.token }}
           RECORDS: ${{ steps.report.outputs.records }}
           CANDIDATES: ${{ steps.report.outputs.india_candidates }}
+          WAITING: ${{ steps.report.outputs.awaiting_india_site }}
           AS_OF: ${{ steps.report.outputs.as_of }}
         run: |
           set -euo pipefail
           git config user.name  'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
 
-          # Rebuild the branch from the commit under test each run, so the PR is
-          # always a single reviewable diff against the default branch.
-          git checkout -B "$BRANCH"
-          git add -A -- data/automated reports
+          # Only data/automated and reports are staged, by the Detect changes
+          # step above. The curated files cannot reach this commit.
           git commit -m "data: refresh automated trial sweep ($AS_OF)" \
-                     -m "$RECORDS records normalised; $CANDIDATES with a verified Indian site."
-          # Fetch the tracking ref so --force-with-lease has a lease to check
-          # against; on the first run the branch does not exist yet.
-          git fetch origin "$BRANCH:refs/remotes/origin/$BRANCH" 2>/dev/null || true
-          git push --force-with-lease -u origin "$BRANCH"
+                     -m "$RECORDS records normalised; $CANDIDATES with a verified Indian site; $WAITING classified as an mRNA cancer vaccine but awaiting an India site."
 
-          body="$(cat <<EOF
-          Automated sweep of the public ClinicalTrials.gov v2 API using every term in
-          \`search_terms.txt\` with \`India\` as the location query.
-
-          - Records normalised: **$RECORDS**
-          - Classified as an mRNA cancer vaccine with a verified Indian site: **$CANDIDATES**
-          - Results as of: **$AS_OF**
-
-          Only \`data/automated/\` and \`reports/AUTOMATED_SWEEP.md\` are touched. The
-          curated \`FINDINGS.md\` and \`data/raw_results.json\` are compiled by hand from
-          primary sources and are never modified by this workflow.
-
-          **Every row here is a machine classification, not a verified finding and not an
-          eligibility determination.** Check each record against its primary registry
-          entry before merging anything into the curated report. CTRI Advanced Search is
-          not covered: submitting it requires a human-entered Security Code, which this
-          project does not automate.
-          EOF
-          )"
-
-          # Reuse the open PR if there is one; a previous PR that was merged or
-          # closed must not be resurrected, so only open ones count.
-          pr="$(gh pr list --head "$BRANCH" --state open --limit 1 --json number --jq '.[0].number // empty')"
-          if [ -n "$pr" ]; then
-            gh pr edit "$pr" --title "data: refresh automated trial sweep ($AS_OF)" --body "$body"
-          else
-            gh pr create --base "${{ github.ref_name }}" --head "$BRANCH" \
-              --title "data: refresh automated trial sweep ($AS_OF)" --body "$body"
-          fi
+          # Someone may have pushed while the sweep was running. Rebase this one
+          # generated commit onto the new tip rather than forcing over their
+          # work; a conflict here is a real conflict and should fail loudly.
+          for attempt in 1 2 3; do
+            if git push origin "HEAD:$TARGET"; then
+              exit 0
+            fi
+            echo "push attempt $attempt rejected; rebasing onto the current tip" >&2
+            git fetch origin "$TARGET"
+            git rebase "origin/$TARGET"
+          done
+          echo "::error::could not push the refreshed report to $TARGET" >&2
+          exit 1
 
       - name: Flag a possible India candidate
         # The point of the schedule: say something loudly if a trial that looks

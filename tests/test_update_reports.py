@@ -7,12 +7,14 @@ import unittest
 
 from update_reports import (
     NO_CANDIDATE_NOTE,
+    awaiting_india_site,
     cell,
     counts_by_category,
     india_candidates,
     load_sweep,
     main,
     render_report,
+    review_order,
     review_reason,
 )
 
@@ -127,6 +129,37 @@ class ReportTests(unittest.TestCase):
         self.assertEqual([r["registry_id"] for r in found], ["NCT09999001"])
 
 
+class WatchListTests(unittest.TestCase):
+    """Records that pass the classifier but list no Indian site."""
+
+    def test_only_qualifying_records_without_a_site_are_waiting(self):
+        found = awaiting_india_site([QUALIFYING, NO_INDIA_SITE, NOT_A_VACCINE])
+        self.assertEqual([r["registry_id"] for r in found], ["NCT09999004"])
+
+    def test_watch_list_sorts_ahead_of_ruled_out_records(self):
+        # NOT_A_VACCINE has the lower NCT id, so id order alone would bury the
+        # record that actually needs looking at.
+        ordered = sorted([NOT_A_VACCINE, NO_INDIA_SITE], key=review_order)
+        self.assertEqual([r["registry_id"] for r in ordered],
+                         ["NCT09999004", "NCT09999003"])
+
+    def test_watch_list_heads_the_review_table(self):
+        noise = [dict(NOT_A_VACCINE, registry_id=f"NCT{i:07d}") for i in range(40)]
+        report = render_report(noise + [NO_INDIA_SITE], "2026-08-23", "test", 5)
+        table_start = report.index("## Flagged for manual verification")
+        first_row = report.index("| NCT", table_start)
+        self.assertIn("NCT09999004", report[first_row:first_row + 40])
+
+    def test_headline_counts_the_watch_list_when_there_are_no_candidates(self):
+        report = render_report([NO_INDIA_SITE, NOT_A_VACCINE], "2026-08-23", "test", 25)
+        self.assertIn("1 record(s) do classify as an mRNA cancer vaccine", report)
+
+    def test_no_watch_list_note_when_nothing_is_waiting(self):
+        report = render_report([NOT_A_VACCINE], "2026-08-23", "test", 25)
+        self.assertNotIn("do classify as an mRNA cancer vaccine", report)
+        self.assertNotIn("classify as an mRNA cancer vaccine but list", report)
+
+
 class MainTests(unittest.TestCase):
     def run_main(self, tmp: str, records: list[dict], *extra: str) -> int:
         root = pathlib.Path(tmp)
@@ -141,6 +174,21 @@ class MainTests(unittest.TestCase):
         with contextlib.redirect_stdout(io.StringIO()), \
                 contextlib.redirect_stderr(io.StringIO()):
             return main(argv)
+
+    def test_summary_reports_the_watch_list_count(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            argv = [
+                "--sweep-json", str(write_sweep(root, [NO_INDIA_SITE, NOT_A_VACCINE])),
+                "--data-dir", str(root / "data"),
+                "--report", str(root / "report.md"),
+            ]
+            out = io.StringIO()
+            with contextlib.redirect_stdout(out), contextlib.redirect_stderr(io.StringIO()):
+                main(argv)
+        summary = json.loads(out.getvalue())
+        self.assertEqual(summary["awaiting_india_site"], 1)
+        self.assertEqual(summary["india_candidates"], 0)
 
     def test_writes_every_output_file(self):
         with tempfile.TemporaryDirectory() as tmp:
