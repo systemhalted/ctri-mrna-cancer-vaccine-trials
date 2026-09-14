@@ -4,9 +4,9 @@
      overwritten by the next scheduled run. The curated research report
      is FINDINGS.md, which this file never modifies. -->
 
-- Results as of: **2026-09-10**
+- Results as of: **2026-09-14**
 - Discovery source: ClinicalTrials.gov v2 API (India location query)
-- Records normalised: **314**
+- Records normalised: **316**
 
 ## Headline
 
@@ -21,7 +21,7 @@ See `FINDINGS.md` for the curated snapshot and the sources behind it.
 | A -- currently recruiting at a verified Indian site | 0 |
 | B -- India site verified, not yet recruiting or status uncertain | 0 |
 | C -- India site verified, no longer recruiting | 0 |
-| D -- needs manual verification (no verified Indian site, or evidence incomplete) | 314 |
+| D -- needs manual verification (no verified Indian site, or evidence incomplete) | 316 |
 
 ## Flagged for manual verification
 
@@ -53,7 +53,7 @@ See `FINDINGS.md` for the curated snapshot and the sources behind it.
 | NCT00406653 | A Study of Abatacept in Patients With Active Crohn's Disease | TERMINATED | Missing required evidence: mRNA platform, vaccine modality, cancer indication. |
 | NCT00409188 | Cancer Vaccine Study for Unresectable Stage III Non-small Cell Lung Cancer (START) | COMPLETED | Cancer vaccine present but platform is not stated as mRNA - may be peptide/DC/DNA/viral-vector. Verify the construct. |
 
-289 further record(s) omitted here; the full list is `data/automated/manual_verification.csv`.
+291 further record(s) omitted here; the full list is `data/automated/manual_verification.csv`.
 
 ## What this sweep does and does not cover
 
