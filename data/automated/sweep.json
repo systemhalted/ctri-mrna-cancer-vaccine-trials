@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-09-14",
+  "as_of": "2026-09-21",
   "source": "ClinicalTrials.gov v2 API (India location query)",
   "results": [
     {
@@ -7391,7 +7391,7 @@
       "investigational_treatment": "Pembrolizumab/Vibostolimab | MK-7684A | Coformulation of pembrolizumab (MK-3475) 200mg and vibostolimab (MK-7684) 200mg. Participants receive the coformulation by intravenous (IV) infusion every 3 weeks (Q3W) for up to 35 administrations (up to \\~2 years).; Pembrolizumab | MK-3475 / Keytruda | Participants receive 200 mg of pembrolizumab by intravenous (IV) infusion every 3 weeks (Q3W) for up to 35 administrations (up to \\~2 years).",
       "mrna_qualification_rationale": "Vetoed: indication is an infectious disease, not cancer therapy",
       "trial_phase": "PHASE3",
-      "recruitment_status": "COMPLETED",
+      "recruitment_status": "TERMINATED",
       "date_of_registration": "2021-02-02",
       "study_start_date": "2021-04-07",
       "sponsor": "Merck Sharp & Dohme LLC",
@@ -10082,7 +10082,7 @@
       "study_start_date": "2025-08-06",
       "sponsor": "AstraZeneca",
       "principal_investigator": "",
-      "indian_trial_sites": "Research Site, Ansārinagar, India [RECRUITING]; Research Site, Babgalore, India [RECRUITING]; Research Site, Calicut, India [WITHDRAWN]; Research Site, Delhi, India [WITHDRAWN]; Research Site, Hyderabad, India [RECRUITING]; Research Site, Kannur, India [RECRUITING]; Research Site, Kanpur, India [RECRUITING]; Research Site, Mumbai, India [RECRUITING]; Research Site, Nagpur, India [RECRUITING]; Research Site, Varanasi, India [RECRUITING]",
+      "indian_trial_sites": "Research Site, Ansārinagar, India [RECRUITING]; Research Site, Babgalore, India [WITHDRAWN]; Research Site, Calicut, India [WITHDRAWN]; Research Site, Delhi, India [WITHDRAWN]; Research Site, Hyderabad, India [RECRUITING]; Research Site, Kannur, India [RECRUITING]; Research Site, Kanpur, India [RECRUITING]; Research Site, Mumbai, India [RECRUITING]; Research Site, Nagpur, India [RECRUITING]; Research Site, Varanasi, India [RECRUITING]",
       "participating_hospitals_institutions": "Research Site; Research Site; Research Site; Research Site; Research Site; Research Site; Research Site; Research Site; Research Site; Research Site",
       "contact_person": "AstraZeneca Clinical Study Information Center",
       "contact_email": "information.center@astrazeneca.com",
