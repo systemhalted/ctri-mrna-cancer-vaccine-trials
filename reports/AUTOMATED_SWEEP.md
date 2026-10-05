@@ -4,7 +4,7 @@
      overwritten by the next scheduled run. The curated research report
      is FINDINGS.md, which this file never modifies. -->
 
-- Results as of: **2026-09-28**
+- Results as of: **2026-10-05**
 - Discovery source: ClinicalTrials.gov v2 API (India location query)
 - Records normalised: **317**
 
